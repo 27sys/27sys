@@ -31,10 +31,9 @@ const CONFIG = {
     homeVisitNote: "Déplacement à domicile facturé séparément, annoncé avant intervention.",
   },
   images: {
-    // Absolute URL volontairement utilisée pour éliminer tout problème de chemin
-    // sur GitHub Pages / hébergement avec sous-dossier.
+    // Photo personnelle utilisée dans le hero et la section « À propos ».
     heroPhoto: "https://raw.githubusercontent.com/Nizar404/27Sys_Service_Website/main/images/hero-technicien.webp.png?v=2",
-    aboutPhoto: "",
+    aboutPhoto: "https://raw.githubusercontent.com/Nizar404/27Sys_Service_Website/main/images/hero-technicien.webp.png?v=2",
     ogImage: "",
   },
   seo: {
