@@ -84,20 +84,18 @@ const CONFIG = {
   // --------------------------------------------------------------------
   // 6. PHOTOS
   // --------------------------------------------------------------------
-  // Déposez vos fichiers dans le dossier /images puis indiquez leur nom ici.
-  // Tant qu'aucune photo n'est ajoutée, un cadre technique s'affiche à la place.
+  // La photo Hero est intégrée directement ici pour le premier lancement.
+  // Cela évite de dépendre d'un hébergeur externe.
   images: {
-    heroPhoto: "",   // ex: "images/hero-technicien.jpg"
-    aboutPhoto: "",  // ex: "images/about-technicien.jpg"
-    // Utilisée uniquement pour le partage sur les réseaux sociaux (Open Graph)
-    ogImage: "",     // ex: "images/og-cover.jpg"
+    heroPhoto: "data:image/webp;base64,UklGRiQA6ABXRUJQVlA4IBgA...",
+    aboutPhoto: "",
+    ogImage: "",
   },
 
   // --------------------------------------------------------------------
   // 7. RÉFÉRENCEMENT LOCAL (SEO) — utilisé pour Google
   // --------------------------------------------------------------------
   seo: {
-    // URL finale du site une fois en ligne (sans le "/" à la fin)
     siteUrl: "https://www.27sys.ma",
   },
 
