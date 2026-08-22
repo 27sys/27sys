@@ -69,7 +69,7 @@ const CONFIG = {
   // 6. PHOTOS
   // --------------------------------------------------------------------
   images: {
-    heroPhoto: "",
+    heroPhoto: "images/hero-technicien.webp.jpg",
     aboutPhoto: "",
     ogImage: "",
   },
