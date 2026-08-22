@@ -69,7 +69,8 @@ const CONFIG = {
   // 6. PHOTOS
   // --------------------------------------------------------------------
   images: {
-    heroPhoto: "images/hero-technicien.webp.jpg",
+    // Le fichier présent dans /images est un PNG.
+    heroPhoto: "images/hero-technicien.webp.png",
     aboutPhoto: "",
     ogImage: "",
   },
