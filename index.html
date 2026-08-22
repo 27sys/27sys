@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!--
+  ============================================================================
+  À PROPOS DE CES BALISES META (titre, description, partage réseaux sociaux)
+  ============================================================================
+  Ces lignes sont volontairement écrites en dur (et non depuis config.js)
+  car les robots de Google et de Facebook/WhatsApp ne lisent pas toujours
+  le JavaScript de la page. Si vous changez le nom de l'entreprise ou la
+  ville, pensez à mettre à jour aussi ces quelques lignes.
+  ============================================================================
+-->
+<title>27sys Services — Dépannage informatique & PC Gaming à Casablanca</title>
+<meta name="description" content="Diagnostic et réparation PC, PC Gaming, Windows, hardware et réseau Wi-Fi à Casablanca. Intervention à domicile, diagnostic avant remplacement, prix annoncés avant intervention.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://www.27sys.ma/">
+
+<!-- Open Graph / partage sur WhatsApp, Facebook, LinkedIn -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="27sys Services — Dépannage informatique & PC Gaming à Casablanca">
+<meta property="og:description" content="Votre PC ne fonctionne plus ? On trouve pourquoi. Diagnostic, réparation, hardware et réseau à Casablanca.">
+<meta property="og:locale" content="fr_MA">
+<meta property="og:site_name" content="27sys Services">
+
+<!-- Polices -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+
+<!-- Favicon minimal, monogramme -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23090B0F'/%3E%3Ctext x='50' y='63' font-family='monospace' font-size='40' fill='%2300D9FF' text-anchor='middle'%3E27%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+<!-- ==================== SKIP LINK (accessibilité) ==================== -->
+<a class="skip-link" href="#main">Aller au contenu</a>
+
+<!-- ==================== EN-TÊTE / NAVIGATION ==================== -->
+<header class="site-header" id="site-header">
+  <div class="wrap header-inner">
+    <a href="#main" class="logo" aria-label="27sys — retour en haut de page">
+      <span class="logo-mark">27<span class="logo-mark-accent">sys</span></span>
+    </a>
+
+    <nav class="main-nav" id="main-nav" aria-label="Navigation principale">
+      <ul>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#methode">Méthode</a></li>
+        <li><a href="#apropos">À propos</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn-primary btn-compact" data-cfg-href="waLink" href="#" target="_blank" rel="noopener">
+        <span class="btn-dot" aria-hidden="true"></span>
+        WhatsApp
+      </a>
+      <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Ouvrir le menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ==================== HERO ==================== -->
+  <section class="hero" id="hero">
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="wrap hero-inner">
+
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>27SYS // IT SERVICES // CASABLANCA</p>
+
+        <h1 class="hero-title">
+          Votre PC ne fonctionne plus&nbsp;?<br>
+          <span class="hero-title-accent">On trouve pourquoi.</span>
+        </h1>
+
+        <p class="hero-sub">Dépannage informatique, PC Gaming, hardware, Windows et réseau à Casablanca.</p>
+
+        <div class="hero-ctas">
+          <a class="btn btn-primary" data-cfg-href="waLink" href="#" target="_blank" rel="noopener">Parler sur WhatsApp</a>
+          <a class="btn btn-ghost" href="#services">Voir les services</a>
+        </div>
+
+        <dl class="hero-meta">
+          <div>
+            <dt>Zone</dt>
+            <dd data-cfg="location.addressLine">Casablanca et périphérie</dd>
+          </div>
+          <div>
+            <dt>Disponibilité</dt>
+            <dd data-cfg="location.hours">Lun. – Sam. · 9h00 – 19h00</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="hero-visual">
+        <figure class="hero-photo-frame" id="hero-photo-frame">
+          <img id="hero-photo" alt="Technicien 27sys en train de diagnostiquer un PC ouvert, composants et outils de mesure visibles" style="display:none;">
+          <div class="photo-placeholder" id="hero-photo-placeholder">
+            <span class="placeholder-corner tl" aria-hidden="true"></span>
+            <span class="placeholder-corner tr" aria-hidden="true"></span>
+            <span class="placeholder-corner bl" aria-hidden="true"></span>
+            <span class="placeholder-corner br" aria-hidden="true"></span>
+            <span class="placeholder-label">PHOTO<br>À AJOUTER</span>
+          </div>
+
+          <span class="tag tag-top-left">DIAGNOSTIC</span>
+          <span class="tag tag-top-right">CASABLANCA</span>
+          <span class="tag tag-bottom">PC / NETWORK / HARDWARE</span>
+        </figure>
+
+        <!-- Élément signature : console de diagnostic -->
+        <div class="diag-console" role="img" aria-label="Panneau de diagnostic technique animé montrant une vérification de composants">
+          <div class="diag-console-head">
+            <span class="diag-console-dot" aria-hidden="true"></span>
+            diagnostic.log
+          </div>
+          <ul class="diag-console-lines">
+            <li><span class="diag-prompt">&gt;</span> lancement du diagnostic…</li>
+            <li><span class="diag-prompt">&gt;</span> CPU — <span class="diag-ok">OK</span></li>
+            <li><span class="diag-prompt">&gt;</span> RAM — <span class="diag-ok">OK</span></li>
+            <li><span class="diag-prompt">&gt;</span> stockage — <span class="diag-ok">OK</span></li>
+            <li><span class="diag-prompt">&gt;</span> cause identifiée <span class="diag-cursor" aria-hidden="true">_</span></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== SERVICES ==================== -->
+  <section class="services" id="services">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="eyebrow eyebrow-plain">SERVICES</p>
+        <h2 class="section-title">Ce que 27sys peut résoudre</h2>
+      </header>
+
+      <div class="bento">
+
+        <article class="bento-card bento-card--wide">
+          <span class="bento-index">01</span>
+          <h3>Diagnostic &amp; réparation</h3>
+          <p>PC qui ne démarre plus, écran noir, plantages, surchauffe, performances anormales.</p>
+          <span class="bento-indicator" aria-hidden="true">
+            <span class="bento-indicator-bar"></span>
+            <span class="bento-indicator-bar"></span>
+            <span class="bento-indicator-bar"></span>
+          </span>
+        </article>
+
+        <article class="bento-card">
+          <span class="bento-index">02</span>
+          <h3>PC Gaming</h3>
+          <p>Diagnostic GPU/CPU/RAM/PSU, températures, performances, upgrades et optimisation.</p>
+          <span class="bento-indicator bento-indicator--temp" aria-hidden="true">72°C</span>
+        </article>
+
+        <article class="bento-card">
+          <span class="bento-index">03</span>
+          <h3>Windows &amp; logiciels</h3>
+          <p>Installation, réinstallation, pilotes, configuration et optimisation.</p>
+          <span class="bento-indicator bento-indicator--dots" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+        </article>
+
+        <article class="bento-card">
+          <span class="bento-index">04</span>
+          <h3>Hardware</h3>
+          <p>RAM, SSD, GPU, alimentation, refroidissement et remplacement de composants.</p>
+          <span class="bento-indicator bento-indicator--chip" aria-hidden="true"></span>
+        </article>
+
+        <article class="bento-card">
+          <span class="bento-index">05</span>
+          <h3>Réseau &amp; Wi-Fi</h3>
+          <p>Problèmes de connexion, configuration routeur, Ethernet, Wi-Fi et réseau local.</p>
+          <span class="bento-indicator bento-indicator--signal" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </span>
+        </article>
+
+        <article class="bento-card bento-card--wide">
+          <span class="bento-index">06</span>
+          <h3>Intervention à domicile</h3>
+          <p>Assistance informatique directement chez vous à Casablanca.</p>
+          <span class="bento-indicator bento-indicator--pin" aria-hidden="true">CASA</span>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== MÉTHODE / PROCESS ==================== -->
+  <section class="method" id="methode">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="eyebrow eyebrow-plain">MÉTHODE</p>
+        <h2 class="section-title">Pas de diagnostic au hasard.</h2>
+      </header>
+
+      <ol class="method-steps">
+        <li class="method-step">
+          <span class="method-step-index">01</span>
+          <h3>Diagnostiquer</h3>
+          <p>Identifier la cause avant de remplacer quoi que ce soit.</p>
+        </li>
+        <li class="method-step">
+          <span class="method-step-index">02</span>
+          <h3>Expliquer</h3>
+          <p>Vous expliquer clairement le problème et les solutions possibles.</p>
+        </li>
+        <li class="method-step">
+          <span class="method-step-index">03</span>
+          <h3>Réparer</h3>
+          <p>Effectuer la réparation ou proposer l'intervention adaptée.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ==================== À PROPOS ==================== -->
+  <section class="about" id="apropos">
+    <div class="wrap about-inner">
+
+      <figure class="about-photo-frame">
+        <img id="about-photo" alt="Portrait professionnel du fondateur de 27sys Services" style="display:none;">
+        <div class="photo-placeholder photo-placeholder--about" id="about-photo-placeholder">
+          <span class="placeholder-corner tl" aria-hidden="true"></span>
+          <span class="placeholder-corner tr" aria-hidden="true"></span>
+          <span class="placeholder-corner bl" aria-hidden="true"></span>
+          <span class="placeholder-corner br" aria-hidden="true"></span>
+          <span class="placeholder-label">PHOTO<br>À AJOUTER</span>
+        </div>
+      </figure>
+
+      <div class="about-copy">
+        <p class="eyebrow eyebrow-plain">À PROPOS</p>
+        <h2 class="section-title">27sys, c'est aussi une personne.</h2>
+        <p class="about-text">Je développe 27sys avec une idée simple&nbsp;: proposer aux particuliers et petites entreprises de Casablanca un service informatique sérieux, transparent et accessible.</p>
+
+        <ul class="credentials">
+          <li>Expérience professionnelle</li>
+          <li>Formation IT / Réseaux</li>
+          <li>Cisco</li>
+          <li>Hardware &amp; Troubleshooting</li>
+        </ul>
+
+        <a class="btn btn-ghost btn-small" id="linkedin-link" data-cfg-href="social.linkedin" href="#" target="_blank" rel="noopener">Voir le profil LinkedIn</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== CONFIANCE ==================== -->
+  <section class="trust">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="eyebrow eyebrow-plain">CONFIANCE</p>
+        <h2 class="section-title">Pourquoi me confier votre PC&nbsp;?</h2>
+      </header>
+
+      <div class="trust-grid">
+        <div class="trust-item">
+          <span class="trust-index">01</span>
+          <p>Diagnostic avant remplacement</p>
+        </div>
+        <div class="trust-item">
+          <span class="trust-index">02</span>
+          <p>Explications claires</p>
+        </div>
+        <div class="trust-item">
+          <span class="trust-index">03</span>
+          <p>Prix annoncés avant intervention</p>
+        </div>
+      </div>
+
+      <!--
+        AVIS GOOGLE — zone réservée pour de futurs avis clients.
+        Ne pas remplir avec des faux avis. Une fois que vous avez de vrais
+        avis Google, vous pouvez les ajouter ici sous forme de blockquote,
+        ou demander une intégration automatique.
+      -->
+      <div class="reviews-slot">
+        <p class="reviews-slot-label">AVIS GOOGLE</p>
+        <p class="reviews-slot-text">Les premiers avis clients apparaîtront ici prochainement.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CONTACT ==================== -->
+  <section class="contact" id="contact">
+    <div class="wrap contact-inner">
+      <div class="contact-copy">
+        <p class="eyebrow eyebrow-plain">CONTACT</p>
+        <h2 class="section-title">Votre PC a un problème&nbsp;?</h2>
+        <p class="contact-text">Expliquez-moi simplement ce qui se passe. Une photo ou une courte vidéo peut déjà aider à identifier le problème.</p>
+
+        <div class="contact-ctas">
+          <a class="btn btn-primary" data-cfg-href="waLink" href="#" target="_blank" rel="noopener">WhatsApp</a>
+          <a class="btn btn-ghost" data-cfg-href="telLink" href="#">Appeler</a>
+        </div>
+
+        <p class="contact-area" data-cfg="location.areaLabel">Casablanca • Intervention à domicile / sur rendez-vous</p>
+      </div>
+
+      <div class="contact-panel">
+        <dl class="contact-details">
+          <div>
+            <dt>WhatsApp / Téléphone</dt>
+            <dd data-cfg="contact.phoneDisplay">+212 6 00 00 00 00</dd>
+          </div>
+          <div>
+            <dt>Email</dt>
+            <dd data-cfg="contact.email">contact@27sys.ma</dd>
+          </div>
+          <div>
+            <dt>Horaires</dt>
+            <dd data-cfg="location.hours">Lun. – Sam. · 9h00 – 19h00</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FAQ ==================== -->
+  <section class="faq" id="faq">
+    <div class="wrap">
+      <header class="section-head">
+        <p class="eyebrow eyebrow-plain">FAQ</p>
+        <h2 class="section-title">Questions fréquentes</h2>
+      </header>
+
+      <div class="faq-list">
+
+        <div class="faq-item">
+          <h3>
+            <button class="faq-trigger" aria-expanded="false">
+              Combien coûte un diagnostic&nbsp;?
+              <span class="faq-icon" aria-hidden="true"></span>
+            </button>
+          </h3>
+          <div class="faq-panel">
+            <p id="faq-pricing-answer">Le prix du diagnostic vous est communiqué avant toute intervention, une fois le problème décrit. Aucune réparation n'est effectuée sans votre accord sur le prix annoncé.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <h3>
+            <button class="faq-trigger" aria-expanded="false">
+              Intervenez-vous à domicile&nbsp;?
+              <span class="faq-icon" aria-hidden="true"></span>
+            </button>
+          </h3>
+          <div class="faq-panel">
+            <p>Oui, une intervention à domicile est possible à Casablanca et dans la périphérie, sur rendez-vous. Certains diagnostics peuvent aussi être réalisés à distance selon le problème décrit.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <h3>
+            <button class="faq-trigger" aria-expanded="false">
+              Réparez-vous les PC Gaming&nbsp;?
+              <span class="faq-icon" aria-hidden="true"></span>
+            </button>
+          </h3>
+          <div class="faq-panel">
+            <p>Oui. Diagnostic GPU, CPU, RAM et alimentation, contrôle des températures, nettoyage, upgrades et optimisation des performances font partie des interventions courantes.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <h3>
+            <button class="faq-trigger" aria-expanded="false">
+              Est-ce que vous pouvez récupérer mes données&nbsp;?
+              <span class="faq-icon" aria-hidden="true"></span>
+            </button>
+          </h3>
+          <div class="faq-panel">
+            <p>Selon la nature de la panne, une récupération de données peut être envisagée. Cela fait partie du diagnostic&nbsp;: je vous indique clairement ce qui est possible avant d'intervenir, sans garantie automatique de résultat.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <h3>
+            <button class="faq-trigger" aria-expanded="false">
+              Pouvez-vous installer un SSD ou de la RAM&nbsp;?
+              <span class="faq-icon" aria-hidden="true"></span>
+            </button>
+          </h3>
+          <div class="faq-panel">
+            <p>Oui, l'installation et le remplacement de composants (SSD, RAM, GPU, alimentation, refroidissement) font partie des services proposés, avec conseils adaptés à votre configuration.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <h3>
+            <button class="faq-trigger" aria-expanded="false">
+              Travaillez-vous avec les petites entreprises&nbsp;?
+              <span class="faq-icon" aria-hidden="true"></span>
+            </button>
+          </h3>
+          <div class="faq-panel">
+            <p>Oui, particuliers et petites entreprises de Casablanca peuvent faire appel à 27sys pour du dépannage ponctuel ou un suivi régulier de leur parc informatique.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ==================== PIED DE PAGE ==================== -->
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div class="footer-col">
+      <span class="logo-mark logo-mark--footer">27<span class="logo-mark-accent">sys</span> Services</span>
+      <p class="footer-tagline" data-cfg="business.tagline">Dépannage informatique • PC Gaming • Hardware • Réseau</p>
+      <p class="footer-location">Casablanca, Maroc</p>
+    </div>
+
+    <nav class="footer-links" aria-label="Liens">
+      <a data-cfg-href="waLink" href="#" target="_blank" rel="noopener">WhatsApp</a>
+      <a id="footer-linkedin" data-cfg-href="social.linkedin" href="#" target="_blank" rel="noopener">LinkedIn</a>
+      <a id="footer-google" data-cfg-href="social.googleBusiness" href="#" target="_blank" rel="noopener">Google Business</a>
+    </nav>
+  </div>
+  <p class="footer-signature" data-cfg="business.footerSignature">27SYS // BUILDING SYSTEMS, ONE PC AT A TIME.</p>
+</footer>
+
+<!-- ==================== CTA WHATSAPP FLOTTANT (MOBILE) ==================== -->
+<a class="mobile-wa-fab" data-cfg-href="waLink" href="#" target="_blank" rel="noopener" aria-label="Contacter 27sys sur WhatsApp">
+  <span class="mobile-wa-fab-dot" aria-hidden="true"></span>
+  WhatsApp
+</a>
+
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
