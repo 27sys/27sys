@@ -36,19 +36,19 @@ const CONFIG = {
   contact: {
     // Numéro WhatsApp au format INTERNATIONAL, SANS le "+", SANS espaces.
     // Exemple pour un numéro marocain 06 XX XX XX XX : "2126XXXXXXXX"
-    whatsappNumber: "212600000000",
+    whatsappNumber: "212640008930",
 
     // Message pré-rempli qui s'affichera quand quelqu'un clique sur WhatsApp.
     whatsappMessage: "Bonjour 27sys, j'ai un problème avec mon PC : ",
 
     // Numéro affiché à l'écran (format lisible pour un humain)
-    phoneDisplay: "+212 6 00 00 00 00",
+    phoneDisplay: "+212 6 40 00 89 30",
 
     // Même numéro mais au format technique pour le lien "Appeler"
     // (pas d'espaces, garder le +)
-    phoneHref: "+212600000000",
+    phoneHref: "+212640008930",
 
-    email: "contact@27sys.ma",
+    email: "nbenramou@gmail.com",
   },
 
   // --------------------------------------------------------------------
@@ -56,7 +56,7 @@ const CONFIG = {
   // --------------------------------------------------------------------
   social: {
     // Laissez entre guillemets vides "" pour masquer un bouton non prêt
-    linkedin: "https://www.linkedin.com/in/votre-profil",
+    linkedin: "https://www.linkedin.com/in/nizar-benramou-0a9847b6/",
     googleBusiness: "",
   },
 
