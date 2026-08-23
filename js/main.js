@@ -12,19 +12,12 @@
 
   var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* --------------------------------------------------------------------
-   * 1. Lecture d'une valeur imbriquée dans CONFIG à partir d'un chemin
-   *    du type "location.hours"
-   * ------------------------------------------------------------------ */
   function readConfigPath(path) {
     return path.split(".").reduce(function (obj, key) {
       return obj && obj[key] !== undefined ? obj[key] : "";
     }, CONFIG);
   }
 
-  /* --------------------------------------------------------------------
-   * 2. Valeurs calculées (liens WhatsApp / téléphone / tarif)
-   * ------------------------------------------------------------------ */
   var computed = {
     waLink:
       "https://wa.me/" +
@@ -39,19 +32,11 @@
     return readConfigPath(path);
   }
 
-  /* --------------------------------------------------------------------
-   * 3. Injection des textes (data-cfg="chemin.dans.config")
-   * ------------------------------------------------------------------ */
   document.querySelectorAll("[data-cfg]").forEach(function (el) {
     var value = resolveValue(el.getAttribute("data-cfg"));
     if (value) el.textContent = value;
   });
 
-  /* --------------------------------------------------------------------
-   * 4. Injection des liens (data-cfg-href="chemin.dans.config")
-   *    Les boutons/liens dont la valeur config est vide sont masqués
-   *    proprement (ex: LinkedIn ou Google Business non renseignés).
-   * ------------------------------------------------------------------ */
   document.querySelectorAll("[data-cfg-href]").forEach(function (el) {
     var value = resolveValue(el.getAttribute("data-cfg-href"));
     if (value) {
@@ -63,12 +48,6 @@
     }
   });
 
-  /* --------------------------------------------------------------------
-   * 5bis. Liens WhatsApp par service ("Parler de ce besoin →")
-   *    Chaque carte de service porte un attribut data-wa-topic. On lui
-   *    construit un lien WhatsApp avec un message pré-rempli spécifique,
-   *    plus efficace qu'un simple "Contactez-nous" générique.
-   * ------------------------------------------------------------------ */
   document.querySelectorAll(".bento-wa-link[data-wa-topic]").forEach(function (el) {
     var topic = el.getAttribute("data-wa-topic");
     var message = "Bonjour 27sys, j'aimerais avoir des informations concernant " + topic + ".";
@@ -80,9 +59,6 @@
     el.setAttribute("rel", "noopener");
   });
 
-  /* --------------------------------------------------------------------
-   * 5. Tarif du diagnostic dans la FAQ (ne jamais inventer de prix)
-   * ------------------------------------------------------------------ */
   var pricingAnswer = document.getElementById("faq-pricing-answer");
   if (pricingAnswer && CONFIG.pricing.diagnostic) {
     pricingAnswer.textContent =
@@ -92,10 +68,6 @@
       CONFIG.pricing.homeVisitNote;
   }
 
-  /* --------------------------------------------------------------------
-   * 6. Photos : si un chemin est renseigné dans config.js, on affiche
-   *    la vraie photo et on masque le cadre technique de remplacement.
-   * ------------------------------------------------------------------ */
   function mountPhoto(imgId, placeholderId, path) {
     var img = document.getElementById(imgId);
     var placeholder = document.getElementById(placeholderId);
@@ -112,9 +84,6 @@
   }
   mountPhoto("about-photo", "about-photo-placeholder", CONFIG.images.aboutPhoto);
 
-  /* --------------------------------------------------------------------
-   * 7. Open Graph image (si renseignée)
-   * ------------------------------------------------------------------ */
   if (CONFIG.images.ogImage) {
     var ogTag = document.createElement("meta");
     ogTag.setAttribute("property", "og:image");
@@ -125,9 +94,6 @@
     document.head.appendChild(ogTag);
   }
 
-  /* --------------------------------------------------------------------
-   * 8. Données structurées Schema.org (LocalBusiness) pour Google
-   * ------------------------------------------------------------------ */
   var schema = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
@@ -152,9 +118,6 @@
   schemaScript.textContent = JSON.stringify(schema);
   document.head.appendChild(schemaScript);
 
-  /* --------------------------------------------------------------------
-   * 9. En-tête : fond au scroll
-   * ------------------------------------------------------------------ */
   var header = document.getElementById("site-header");
   function onScrollHeader() {
     if (window.scrollY > 12) header.classList.add("is-scrolled");
@@ -163,9 +126,6 @@
   onScrollHeader();
   window.addEventListener("scroll", onScrollHeader, { passive: true });
 
-  /* --------------------------------------------------------------------
-   * 10. Menu mobile
-   * ------------------------------------------------------------------ */
   var navToggle = document.getElementById("nav-toggle");
   var mainNav = document.getElementById("main-nav");
   navToggle.addEventListener("click", function () {
@@ -180,9 +140,6 @@
     });
   });
 
-  /* --------------------------------------------------------------------
-   * 11. Accordéon FAQ
-   * ------------------------------------------------------------------ */
   document.querySelectorAll(".faq-trigger").forEach(function (trigger) {
     trigger.addEventListener("click", function () {
       var item = trigger.closest(".faq-item");
@@ -200,9 +157,6 @@
     });
   });
 
-  /* --------------------------------------------------------------------
-   * 12. Apparition au défilement (scroll reveal)
-   * ------------------------------------------------------------------ */
   var revealTargets = document.querySelectorAll(
     ".bento-card, .ask-card, .skill-group, .method-step, .trust-item, .faq-item, .about-inner, .contact-inner"
   );
@@ -223,5 +177,36 @@
       { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
     );
     revealTargets.forEach(function (el) { observer.observe(el); });
+  }
+
+  /* --------------------------------------------------------------------
+   * 13. HERO — photographie atelier 27sys
+   *    On remplace le dossier graphique générique par la vraie photo
+   *    présente dans /images, sans toucher à la configuration du domaine.
+   * ------------------------------------------------------------------ */
+  var heroDossier = document.querySelector(".hero-dossier");
+  if (heroDossier) {
+    heroDossier.innerHTML =
+      '<img class="hero-workshop-photo" src="images/hero-technicien.webp.png" alt="PC ouvert en cours de maintenance dans l\'atelier 27sys" loading="eager">' +
+      '<div class="hero-photo-overlay"></div>' +
+      '<div class="hero-photo-meta"><span>27SYS / WORKSHOP 01</span><span>CASABLANCA / MA</span></div>' +
+      '<div class="hero-photo-caption"><span class="status-dot"></span><strong>HARDWARE / DIAGNOSTIC</strong><small>PC · COMPONENTS · TROUBLESHOOTING</small></div>';
+
+    var heroStyle = document.createElement("style");
+    heroStyle.textContent = `
+      .hero-dossier{min-height:560px;padding:0!important;border:1px solid var(--ink);background:var(--navy);overflow:hidden;box-shadow:24px 28px 0 rgba(21,24,28,.08)}
+      .hero-dossier:before{display:none!important}
+      .hero-workshop-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center}
+      .hero-photo-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,16,22,.05) 15%,rgba(10,16,22,.08) 42%,rgba(10,16,22,.82) 100%)}
+      .hero-photo-overlay:after{content:'';position:absolute;inset:18px;border:1px solid rgba(255,255,255,.24);pointer-events:none}
+      .hero-photo-meta{position:absolute;z-index:3;top:22px;left:22px;right:22px;display:flex;justify-content:space-between;gap:15px;color:rgba(255,255,255,.82);font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+      .hero-photo-caption{position:absolute;z-index:3;left:22px;right:22px;bottom:22px;padding:17px 18px;border-top:1px solid rgba(255,255,255,.3);color:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+      .hero-photo-caption strong{font-family:var(--display);font-size:14px;letter-spacing:.02em}
+      .hero-photo-caption small{width:100%;margin-left:16px;color:rgba(255,255,255,.66);font-family:var(--mono);font-size:8px;letter-spacing:.1em}
+      .hero-photo-caption .status-dot{flex:0 0 6px}
+      @media (max-width:900px){.hero-dossier{min-height:460px}.hero-photo-meta{font-size:8px}.hero-photo-caption{bottom:18px;left:18px;right:18px}}
+      @media (max-width:640px){.hero-dossier{min-height:390px;box-shadow:12px 14px 0 rgba(21,24,28,.08)}.hero-photo-overlay:after{inset:12px}.hero-photo-meta{top:15px;left:15px;right:15px}.hero-photo-caption{left:15px;right:15px;bottom:15px;padding:12px}.hero-photo-caption small{font-size:7px}}
+    `;
+    document.head.appendChild(heroStyle);
   }
 })();
