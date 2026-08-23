@@ -12,9 +12,6 @@ const CONFIG = {
   },
   contact: {
     whatsappNumber: "212640008930",
-    // Message par défaut (utilisé par les boutons WhatsApp généraux : en-tête, hero, contact).
-    // Chaque carte de service dans la section "Services" envoie automatiquement
-    // un message plus précis — voir data-wa-topic dans index.html.
     whatsappMessage: "Bonjour 27sys, j'aimerais avoir des informations concernant : ",
     phoneDisplay: "+212 6 40 00 89 30",
     phoneHref: "+212640008930",
@@ -34,9 +31,6 @@ const CONFIG = {
     homeVisitNote: "Déplacement à domicile facturé séparément, annoncé avant intervention.",
   },
   images: {
-    // Photo personnelle utilisée uniquement dans la section « À propos ».
-    // (Le hero n'affiche plus de photo — voir la discussion sur la nouvelle
-    // page d'accueil : le panneau de diagnostic remplace la photo en haut de page.)
     aboutPhoto: "https://raw.githubusercontent.com/Nizar404/27Sys_Service_Website/main/images/hero-technicien.webp.png?v=2",
     ogImage: "",
   },
@@ -44,3 +38,132 @@ const CONFIG = {
     siteUrl: "https://www.27sys.ma",
   },
 };
+
+/* ============================================================================
+   CARROUSEL « VOUS AVEZ BESOIN DE QUOI ? »
+   Les visuels sont intégrés directement pour que la section fonctionne sans
+   dépendre d'un hébergeur d'images externe. Chaque image représente une vraie
+   situation : écran bleu / petite infrastructure / routeur Wi-Fi / upgrade PC.
+   ============================================================================ */
+(function () {
+  const NEED_IMAGES = [
+    "data:image/jpeg;base64,REPLACE_PC",
+    "data:image/jpeg;base64,REPLACE_BUSINESS",
+    "data:image/jpeg;base64,REPLACE_WIFI",
+    "data:image/jpeg;base64,REPLACE_UPGRADE"
+  ];
+
+  const css = `
+    .ask{overflow:hidden}
+    .ask .section-head{position:relative;z-index:2}
+    .ask-carousel{position:relative;margin-top:4px}
+    .ask-viewport{overflow:hidden;border:1px solid rgba(244,243,238,.18);background:#0e1217;box-shadow:0 30px 80px rgba(0,0,0,.18)}
+    .ask-track{display:flex;transition:transform .75s cubic-bezier(.16,1,.3,1);will-change:transform}
+    .ask-track .ask-card{flex:0 0 100%;min-height:470px;border:0;padding:0;display:flex;align-items:flex-end;background:#10161d;background-size:cover;background-position:center;text-decoration:none;isolation:isolate;overflow:hidden}
+    .ask-track .ask-card:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,8,12,.92) 0%,rgba(5,8,12,.66) 42%,rgba(5,8,12,.18) 76%,rgba(5,8,12,.06) 100%);z-index:-1}
+    .ask-track .ask-card:after{content:'';position:absolute;inset:18px;border:1px solid rgba(255,255,255,.13);pointer-events:none}
+    .ask-card-content{position:relative;width:min(100%,660px);padding:54px 64px 58px;z-index:1}
+    .ask-track .ask-number{display:inline-flex;align-items:center;gap:14px;margin:0 0 24px;color:#ff8b5c;font-family:var(--mono);font-size:11px;letter-spacing:.14em}
+    .ask-track .ask-number:after{content:'';width:64px;height:1px;background:currentColor;opacity:.75}
+    .ask-track .ask-card-title{max-width:14ch;margin-bottom:14px;font-size:clamp(2.1rem,4.2vw,4.5rem);line-height:.95;letter-spacing:-.055em;text-shadow:0 2px 18px rgba(0,0,0,.2)}
+    .ask-track .ask-card-desc{max-width:46ch;color:rgba(255,255,255,.78);font-size:16px;line-height:1.6}
+    .ask-track .ask-card-arrow{right:34px;bottom:30px;width:52px;height:52px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.35);color:#fff;font-size:22px;transition:.25s var(--ease)}
+    .ask-track .ask-card:hover{padding-left:0;background-color:#10161d}
+    .ask-track .ask-card:hover .ask-card-arrow{background:var(--orange);border-color:var(--orange);transform:translateX(4px)}
+    .ask-carousel-controls{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:20px}
+    .ask-carousel-dots{display:flex;gap:9px}
+    .ask-carousel-dot{width:34px;height:2px;padding:0;border:0;background:rgba(244,243,238,.24);cursor:pointer;transition:.25s var(--ease)}
+    .ask-carousel-dot.is-active{background:var(--orange)}
+    .ask-carousel-buttons{display:flex;gap:8px}
+    .ask-carousel-button{width:44px;height:44px;border:1px solid rgba(244,243,238,.28);display:grid;place-items:center;color:#fff;font-size:20px;transition:.25s var(--ease)}
+    .ask-carousel-button:hover{background:var(--white);color:var(--ink);border-color:var(--white)}
+    .ask-carousel-meta{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:rgba(244,243,238,.48);text-transform:uppercase}
+    @media(max-width:700px){
+      .ask-track .ask-card{min-height:520px;background-position:center}
+      .ask-track .ask-card:before{background:linear-gradient(0deg,rgba(5,8,12,.95) 0%,rgba(5,8,12,.72) 47%,rgba(5,8,12,.08) 100%)}
+      .ask-card-content{padding:36px 28px 40px}
+      .ask-track .ask-card-title{font-size:clamp(2.25rem,11vw,3.5rem)}
+      .ask-track .ask-card-desc{font-size:14px}
+      .ask-track .ask-card-arrow{right:24px;bottom:22px;width:46px;height:46px}
+      .ask-carousel-controls{margin-top:14px}
+      .ask-carousel-meta{display:none}
+    }
+  `;
+
+  function mountCarousel() {
+    const grid = document.querySelector('.ask-grid');
+    if (!grid || grid.dataset.carouselMounted) return;
+    grid.dataset.carouselMounted = 'true';
+
+    const cards = Array.from(grid.querySelectorAll('.ask-card'));
+    if (!cards.length) return;
+
+    const carousel = document.createElement('div');
+    carousel.className = 'ask-carousel';
+    const viewport = document.createElement('div');
+    viewport.className = 'ask-viewport';
+    const track = document.createElement('div');
+    track.className = 'ask-track';
+    viewport.appendChild(track);
+
+    cards.forEach((card, index) => {
+      card.style.backgroundImage = `url("${NEED_IMAGES[index]}")`;
+      const content = document.createElement('span');
+      content.className = 'ask-card-content';
+      while (card.firstChild) content.appendChild(card.firstChild);
+      card.appendChild(content);
+      track.appendChild(card);
+    });
+
+    const controls = document.createElement('div');
+    controls.className = 'ask-carousel-controls';
+    const dots = document.createElement('div');
+    dots.className = 'ask-carousel-dots';
+    const meta = document.createElement('div');
+    meta.className = 'ask-carousel-meta';
+    meta.textContent = '01 / 04 — FAITES DÉFILER OU CHOISISSEZ';
+    const buttons = document.createElement('div');
+    buttons.className = 'ask-carousel-buttons';
+    const previous = document.createElement('button');
+    previous.type = 'button'; previous.className = 'ask-carousel-button'; previous.setAttribute('aria-label','Situation précédente'); previous.textContent = '←';
+    const next = document.createElement('button');
+    next.type = 'button'; next.className = 'ask-carousel-button'; next.setAttribute('aria-label','Situation suivante'); next.textContent = '→';
+    buttons.append(previous,next);
+    controls.append(dots,meta,buttons);
+
+    cards.forEach((card,index)=>{
+      const dot=document.createElement('button');
+      dot.type='button'; dot.className='ask-carousel-dot'+(index===0?' is-active':'');
+      dot.setAttribute('aria-label',`Voir la situation ${index+1}`);
+      dot.addEventListener('click',()=>go(index,true));
+      dots.appendChild(dot);
+    });
+
+    grid.replaceWith(carousel);
+    carousel.append(viewport,controls);
+
+    let current=0;
+    let timer;
+    function go(index,manual){
+      current=(index+cards.length)%cards.length;
+      track.style.transform=`translateX(-${current*100}%)`;
+      Array.from(dots.children).forEach((dot,i)=>dot.classList.toggle('is-active',i===current));
+      meta.textContent=`${String(current+1).padStart(2,'0')} / ${String(cards.length).padStart(2,'0')} — FAITES DÉFILER OU CHOISISSEZ`;
+      if(manual) restart();
+    }
+    function restart(){
+      clearInterval(timer);
+      if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){timer=setInterval(()=>go(current+1,false),5200);}
+    }
+    previous.addEventListener('click',()=>go(current-1,true));
+    next.addEventListener('click',()=>go(current+1,true));
+    carousel.addEventListener('mouseenter',()=>clearInterval(timer));
+    carousel.addEventListener('mouseleave',restart);
+    carousel.addEventListener('focusin',()=>clearInterval(timer));
+    carousel.addEventListener('focusout',restart);
+    restart();
+  }
+
+  const style=document.createElement('style'); style.id='ask-carousel-style'; style.textContent=css; document.head.appendChild(style);
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',mountCarousel); else mountCarousel();
+})();
