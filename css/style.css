@@ -7,14 +7,14 @@
   position: relative;
   min-height: 800px;
   padding: 160px 0 60px;
-  background-color: var(--ink); /* Fond de secours */
+  background-color: var(--ink);
   background-image: 
     linear-gradient(to right, rgba(21, 24, 28, 0.9) 0%, rgba(21, 24, 28, 0.7) 40%, transparent 100%),
-    url('/images/Hero-technicien2.png');
+    url('../images/Hero-technicien2.png');
   background-size: cover;
   background-position: center right;
   overflow: hidden;
-  color: #fff; /* Le texte principal devient blanc */
+  color: #fff;
 }
 
 /* On supprime le pseudo-élément "27" géant qui n'est plus pertinent */
