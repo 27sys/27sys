@@ -11,22 +11,64 @@ const CONFIG = {
   seo: { siteUrl:"https://www.27sys.ma" }
 };
 
-/* 27SYS HERO — visual treatment loaded independently from the carousel logic. */
+/* 27SYS HERO — full-screen workshop image behind the hero copy. */
 (function(){
   const style=document.createElement('style');
-  style.id='27sys-hero-visual';
+  style.id='27sys-hero-background';
   style.textContent=`
-    .hero{background:#f4f3ee!important}
-    .hero-inner{grid-template-columns:minmax(0,.92fr) minmax(500px,1.08fr)!important;gap:64px!important}
-    .hero-copy{position:relative;z-index:3}
-    .hero-visual{position:relative;min-height:560px}
-    .hero-dossier{height:560px!important;min-height:560px!important;padding:0!important;border:0!important;background:#111 center/cover no-repeat!important;background-image:linear-gradient(180deg,rgba(9,14,18,.03) 0%,rgba(9,14,18,.08) 48%,rgba(9,14,18,.74) 100%),url('https://raw.githubusercontent.com/Nizar404/27Sys_Service_Website/main/images/hero-technicien.webp.png?v=3')!important;box-shadow:24px 28px 0 rgba(21,24,28,.08)!important;border-radius:2px;overflow:hidden}
-    .hero-dossier:before{inset:18px!important;border:1px solid rgba(255,255,255,.22)!important;z-index:1}
-    .hero-dossier:after{content:'27SYS / WORKSHOP 01';position:absolute;left:38px;top:34px;z-index:3;color:rgba(255,255,255,.9);font-family:var(--mono);font-size:10px;letter-spacing:.13em}
-    .dossier-top,.dossier-main,.dossier-bottom,.dossier-mark{display:none!important}
-    .hero-visual:after{content:'HARDWARE / DIAGNOSTIC  ·  PC · COMPONENTS · TROUBLESHOOTING';position:absolute;left:38px;right:38px;bottom:30px;z-index:4;padding-top:14px;border-top:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.78);font-family:var(--mono);font-size:9px;letter-spacing:.1em}
-    @media(max-width:1050px){.hero-inner{grid-template-columns:1fr!important}.hero-visual{max-width:760px;width:100%;margin:10px auto 0}.hero-copy{max-width:850px}}
-    @media(max-width:700px){.hero{padding-top:125px!important}.hero-inner{gap:42px!important}.hero-visual{min-height:430px}.hero-dossier{height:430px!important;min-height:430px!important}.hero-dossier:after{left:24px;top:26px;font-size:8px}.hero-visual:after{left:24px;right:24px;bottom:22px;font-size:7px}.hero-facts span{margin-right:14px;padding-right:14px}}
+    .hero{
+      position:relative;
+      min-height:100vh!important;
+      padding:150px 0 90px!important;
+      display:flex;
+      align-items:center;
+      color:#fff!important;
+      background-color:#111820!important;
+      background-image:
+        linear-gradient(90deg,rgba(7,12,17,.88) 0%,rgba(7,12,17,.72) 38%,rgba(7,12,17,.34) 68%,rgba(7,12,17,.18) 100%),
+        linear-gradient(180deg,rgba(7,12,17,.40) 0%,rgba(7,12,17,.06) 36%,rgba(7,12,17,.44) 100%),
+        url('https://raw.githubusercontent.com/Nizar404/nizar404.github.io/main/images/Hero-technicien2.png?v=1')!important;
+      background-size:cover!important;
+      background-position:center center!important;
+      background-repeat:no-repeat!important;
+      overflow:hidden;
+    }
+    .hero:before{color:rgba(255,255,255,.035)!important;z-index:0}
+    .hero-grid{opacity:.12!important;background-image:linear-gradient(to right,rgba(255,255,255,.13) 1px,transparent 1px)!important;z-index:0}
+    .hero-inner{width:min(1240px,calc(100% - 48px));grid-template-columns:1fr!important;gap:0!important;align-items:center!important;z-index:2}
+    .hero-copy{max-width:820px;position:relative;z-index:4}
+    .hero .eyebrow{color:rgba(255,255,255,.78)!important;text-shadow:0 2px 12px rgba(0,0,0,.35)}
+    .hero .eyebrow-dot{background:#FF7A45;box-shadow:0 0 0 4px rgba(255,122,69,.18)}
+    .hero-title{max-width:780px!important;margin-bottom:26px!important;color:#fff!important;font-size:clamp(4rem,7.3vw,7.2rem)!important;line-height:.88!important;letter-spacing:-.065em!important;text-shadow:0 4px 26px rgba(0,0,0,.30)}
+    .hero-title em{color:#8FD0FF!important}
+    .hero-sub{max-width:680px!important;margin-bottom:34px!important;color:rgba(255,255,255,.86)!important;font-size:18px!important;line-height:1.65!important;text-shadow:0 2px 14px rgba(0,0,0,.28)}
+    .hero-sub strong{color:#fff!important}
+    .hero-ctas{margin-bottom:38px!important}
+    .hero .btn-primary{background:#fff!important;color:#15181C!important;border-color:#fff!important;box-shadow:0 10px 28px rgba(0,0,0,.18)}
+    .hero .btn-primary:hover{background:#1677FF!important;color:#fff!important;border-color:#1677FF!important}
+    .hero .btn-ghost{color:#fff!important;border-color:rgba(255,255,255,.72)!important;background:rgba(10,15,20,.12)!important;backdrop-filter:blur(4px)}
+    .hero .btn-ghost:hover{background:#fff!important;color:#15181C!important;border-color:#fff!important}
+    .hero-facts{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));max-width:760px!important;border-top:1px solid rgba(255,255,255,.3)!important;padding-top:18px!important}
+    .hero-facts span{padding:0 18px 0 0!important;margin:0 18px 0 0!important;border-right:1px solid rgba(255,255,255,.22)!important;color:rgba(255,255,255,.9)!important;font-family:var(--body)!important;font-size:11px!important;letter-spacing:0!important;text-transform:none!important;text-shadow:0 2px 10px rgba(0,0,0,.25)}
+    .hero-facts span:last-child{border:0!important;margin-right:0!important}
+    .hero-facts b{display:block!important;margin:0 0 6px!important;color:#FF8B5C!important;font-family:var(--mono)!important;font-size:10px!important}
+    .hero-visual{display:none!important}
+    .hero:after{content:'27SYS / WORKSHOP 01  ·  CASABLANCA / MA';position:absolute;right:34px;top:102px;z-index:3;color:rgba(255,255,255,.64);font-family:var(--mono);font-size:9px;letter-spacing:.12em;writing-mode:vertical-rl;text-orientation:mixed;text-shadow:0 2px 12px rgba(0,0,0,.3)}
+    .site-header{background:linear-gradient(180deg,rgba(7,12,17,.38),rgba(7,12,17,0))!important;border-bottom-color:transparent!important}
+    .site-header.is-scrolled{background:rgba(244,243,238,.95)!important;border-bottom-color:var(--line)!important}
+    .hero~.segments{border-top-color:var(--line)}
+    @media(max-width:900px){
+      .hero{min-height:100svh!important;padding:125px 0 70px!important;background-position:58% center!important}
+      .hero-facts{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px 0}
+      .hero-facts span{border:0!important;margin:0!important;padding-right:14px!important}
+      .hero:after{right:14px;top:86px;font-size:8px}
+    }
+    @media(max-width:600px){
+      .hero-inner{width:calc(100% - 32px)!important}
+      .hero-title{font-size:clamp(3.35rem,15vw,5.3rem)!important}
+      .hero-sub{font-size:16px!important;max-width:560px!important}
+      .hero:after{display:none}
+    }
   `;
   document.head.appendChild(style);
 })();
@@ -47,7 +89,7 @@ const CONFIG = {
     const carousel=document.createElement('div');carousel.className='ask-carousel';
     const viewport=document.createElement('div');viewport.className='ask-viewport';
     const track=document.createElement('div');track.className='ask-track';viewport.appendChild(track);
-    cards.forEach((card,index)=>{card.style.backgroundImage=`url("${NEED_IMAGES[index]}")`;const content=document.createElement('span');content.className='ask-card-content';while(card.firstChild)content.appendChild(card.firstChild);card.appendChild(content);track.appendChild(card)});
+    cards.forEach((card,index)=>{card.style.backgroundImage=`url(\"${NEED_IMAGES[index]}\")`;const content=document.createElement('span');content.className='ask-card-content';while(card.firstChild)content.appendChild(card.firstChild);card.appendChild(content);track.appendChild(card)});
     const controls=document.createElement('div');controls.className='ask-carousel-controls';const dots=document.createElement('div');dots.className='ask-carousel-dots';const meta=document.createElement('div');meta.className='ask-carousel-meta';const buttons=document.createElement('div');buttons.className='ask-carousel-buttons';const previous=document.createElement('button');previous.type='button';previous.className='ask-carousel-button';previous.setAttribute('aria-label','Situation précédente');previous.textContent='←';const next=document.createElement('button');next.type='button';next.className='ask-carousel-button';next.setAttribute('aria-label','Situation suivante');next.textContent='→';buttons.append(previous,next);controls.append(dots,meta,buttons);
     let current=0,timer;function restart(){clearInterval(timer);if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches)timer=setInterval(()=>go(current+1,false),5200)}function go(index,manual){current=(index+cards.length)%cards.length;track.style.transform=`translateX(-${current*100}%)`;Array.from(dots.children).forEach((dot,i)=>dot.classList.toggle('is-active',i===current));meta.textContent=`${String(current+1).padStart(2,'0')} / ${String(cards.length).padStart(2,'0')} — FAITES DÉFILER OU CHOISISSEZ`;if(manual)restart()}
     cards.forEach((_,index)=>{const dot=document.createElement('button');dot.type='button';dot.className='ask-carousel-dot'+(index===0?' is-active':'');dot.setAttribute('aria-label',`Voir la situation ${index+1}`);dot.addEventListener('click',()=>go(index,true));dots.appendChild(dot)});
