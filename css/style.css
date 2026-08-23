@@ -10,7 +10,7 @@
   background-color: var(--ink); /* Fond de secours */
   background-image: 
     linear-gradient(to right, rgba(21, 24, 28, 0.9) 0%, rgba(21, 24, 28, 0.7) 40%, transparent 100%),
-    url('Images/Hero-technicien2.png'); /* Vérifiez bien que le chemin vers votre dossier image est correct (images/ ou img/) */
+    url('../images/Hero-technicien2.png'); /* Vérifiez bien que le chemin vers votre dossier image est correct (images/ ou img/) */
   background-size: cover;
   background-position: center right;
   overflow: hidden;
