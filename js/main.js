@@ -180,32 +180,46 @@
   }
 
   /* --------------------------------------------------------------------
-   * 13. HERO — photographie atelier 27sys
-   *    On remplace le dossier graphique générique par la vraie photo
-   *    présente dans /images, sans toucher à la configuration du domaine.
+   * HERO — 27sys editorial workshop composition
+   * The existing photo in /images is used as the real visual anchor.
+   * No domain, hosting or deployment settings are changed here.
    * ------------------------------------------------------------------ */
   var heroDossier = document.querySelector(".hero-dossier");
   if (heroDossier) {
     heroDossier.innerHTML =
-      '<img class="hero-workshop-photo" src="images/hero-technicien.webp.png" alt="PC ouvert en cours de maintenance dans l\'atelier 27sys" loading="eager">' +
+      '<img class="hero-workshop-photo" src="images/hero-technicien.webp.png" alt="Technicien travaillant sur un PC ouvert dans un atelier informatique" loading="eager">' +
       '<div class="hero-photo-overlay"></div>' +
       '<div class="hero-photo-meta"><span>27SYS / WORKSHOP 01</span><span>CASABLANCA / MA</span></div>' +
-      '<div class="hero-photo-caption"><span class="status-dot"></span><strong>HARDWARE / DIAGNOSTIC</strong><small>PC · COMPONENTS · TROUBLESHOOTING</small></div>';
+      '<div class="hero-photo-badge"><span class="status-dot"></span>INTERVENTION TECHNIQUE</div>' +
+      '<div class="hero-photo-caption"><strong>HARDWARE / DIAGNOSTIC</strong><small>PC · COMPONENTS · TROUBLESHOOTING</small></div>';
 
     var heroStyle = document.createElement("style");
     heroStyle.textContent = `
-      .hero-dossier{min-height:560px;padding:0!important;border:1px solid var(--ink);background:var(--navy);overflow:hidden;box-shadow:24px 28px 0 rgba(21,24,28,.08)}
+      /* Hero matching the approved 27sys workshop/editorial direction */
+      .hero{min-height:850px;padding:142px 0 76px;background:var(--paper)}
+      .hero-inner{grid-template-columns:minmax(0,.9fr) minmax(520px,1.1fr);gap:64px;align-items:center}
+      .hero-copy{position:relative;z-index:4}
+      .hero-title{font-size:clamp(4rem,6.5vw,6.9rem);max-width:760px;line-height:.9;letter-spacing:-.07em;margin-bottom:30px}
+      .hero-sub{max-width:610px;font-size:17px;line-height:1.7}
+      .hero-ctas{margin-bottom:36px}
+      .hero-facts{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);padding-top:20px;max-width:690px}
+      .hero-facts span{padding:0 18px 0 0;margin:0 18px 0 0;border-right:1px solid var(--line);font-family:var(--body);font-size:11px;letter-spacing:0;text-transform:none;color:var(--ink);line-height:1.35}
+      .hero-facts span:last-child{border:0;margin-right:0}
+      .hero-facts b{display:block;margin:0 0 7px;color:var(--blue);font-family:var(--mono);font-size:10px;font-weight:500}
+      .hero-visual{position:relative;z-index:2}
+      .hero-dossier{position:relative;min-height:610px;padding:0!important;border:0!important;border-radius:2px;background:var(--navy);color:#fff;overflow:hidden;box-shadow:24px 26px 0 rgba(21,24,28,.08)}
       .hero-dossier:before{display:none!important}
-      .hero-workshop-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center}
-      .hero-photo-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,16,22,.05) 15%,rgba(10,16,22,.08) 42%,rgba(10,16,22,.82) 100%)}
-      .hero-photo-overlay:after{content:'';position:absolute;inset:18px;border:1px solid rgba(255,255,255,.24);pointer-events:none}
-      .hero-photo-meta{position:absolute;z-index:3;top:22px;left:22px;right:22px;display:flex;justify-content:space-between;gap:15px;color:rgba(255,255,255,.82);font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase}
-      .hero-photo-caption{position:absolute;z-index:3;left:22px;right:22px;bottom:22px;padding:17px 18px;border-top:1px solid rgba(255,255,255,.3);color:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-      .hero-photo-caption strong{font-family:var(--display);font-size:14px;letter-spacing:.02em}
-      .hero-photo-caption small{width:100%;margin-left:16px;color:rgba(255,255,255,.66);font-family:var(--mono);font-size:8px;letter-spacing:.1em}
-      .hero-photo-caption .status-dot{flex:0 0 6px}
-      @media (max-width:900px){.hero-dossier{min-height:460px}.hero-photo-meta{font-size:8px}.hero-photo-caption{bottom:18px;left:18px;right:18px}}
-      @media (max-width:640px){.hero-dossier{min-height:390px;box-shadow:12px 14px 0 rgba(21,24,28,.08)}.hero-photo-overlay:after{inset:12px}.hero-photo-meta{top:15px;left:15px;right:15px}.hero-photo-caption{left:15px;right:15px;bottom:15px;padding:12px}.hero-photo-caption small{font-size:7px}}
+      .hero-workshop-photo{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;object-position:center center}
+      .hero-photo-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,18,25,.04) 0%,rgba(11,18,25,.02) 48%,rgba(11,18,25,.12) 100%),linear-gradient(180deg,rgba(11,18,25,.02) 38%,rgba(11,18,25,.82) 100%)}
+      .hero-photo-overlay:after{content:'';position:absolute;inset:16px;border:1px solid rgba(255,255,255,.25);pointer-events:none}
+      .hero-photo-meta{position:absolute;z-index:3;top:21px;left:22px;right:22px;display:flex;justify-content:space-between;gap:15px;color:rgba(255,255,255,.86);font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+      .hero-photo-badge{position:absolute;z-index:3;left:22px;bottom:102px;padding:8px 11px;background:rgba(21,24,28,.72);backdrop-filter:blur(8px);color:#fff;font-family:var(--mono);font-size:8px;letter-spacing:.1em}
+      .hero-photo-badge .status-dot{display:inline-block;width:6px;height:6px;margin-right:7px;border-radius:50%;background:var(--orange)}
+      .hero-photo-caption{position:absolute;z-index:3;left:22px;right:22px;bottom:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,.3);color:#fff}
+      .hero-photo-caption strong{display:block;font-family:var(--display);font-size:18px;letter-spacing:.01em;font-weight:600}
+      .hero-photo-caption small{display:block;margin-top:5px;color:rgba(255,255,255,.7);font-family:var(--mono);font-size:8px;letter-spacing:.1em}
+      @media(max-width:1050px){.hero{min-height:790px}.hero-inner{grid-template-columns:minmax(0,.9fr) minmax(390px,1.1fr);gap:40px}.hero-title{font-size:clamp(3.6rem,6.7vw,5.8rem)}.hero-dossier{min-height:540px}.hero-facts{grid-template-columns:repeat(2,1fr);row-gap:16px}.hero-facts span:nth-child(2){border:0}}
+      @media(max-width:760px){.hero{min-height:auto;padding:118px 0 70px}.hero-inner{grid-template-columns:1fr;gap:42px}.hero-title{font-size:clamp(3.4rem,15vw,5.3rem)}.hero-sub{font-size:16px}.hero-dossier{min-height:430px;box-shadow:12px 14px 0 rgba(21,24,28,.08)}.hero-facts{grid-template-columns:repeat(2,1fr);gap:14px 0}.hero-facts span{border:0!important;margin:0;padding-right:12px}.hero-photo-meta{top:16px;left:17px;right:17px;font-size:8px}.hero-photo-badge{left:17px;bottom:92px}.hero-photo-caption{left:17px;right:17px;bottom:17px}.hero-photo-overlay:after{inset:12px}}
     `;
     document.head.appendChild(heroStyle);
   }
