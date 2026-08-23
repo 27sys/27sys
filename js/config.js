@@ -11,6 +11,26 @@ const CONFIG = {
   seo: { siteUrl:"https://www.27sys.ma" }
 };
 
+/* 27SYS HERO — visual treatment loaded independently from the carousel logic. */
+(function(){
+  const style=document.createElement('style');
+  style.id='27sys-hero-visual';
+  style.textContent=`
+    .hero{background:#f4f3ee!important}
+    .hero-inner{grid-template-columns:minmax(0,.92fr) minmax(500px,1.08fr)!important;gap:64px!important}
+    .hero-copy{position:relative;z-index:3}
+    .hero-visual{position:relative;min-height:560px}
+    .hero-dossier{height:560px!important;min-height:560px!important;padding:0!important;border:0!important;background:#111 center/cover no-repeat!important;background-image:linear-gradient(180deg,rgba(9,14,18,.03) 0%,rgba(9,14,18,.08) 48%,rgba(9,14,18,.74) 100%),url('https://raw.githubusercontent.com/Nizar404/27Sys_Service_Website/main/images/hero-technicien.webp.png?v=3')!important;box-shadow:24px 28px 0 rgba(21,24,28,.08)!important;border-radius:2px;overflow:hidden}
+    .hero-dossier:before{inset:18px!important;border:1px solid rgba(255,255,255,.22)!important;z-index:1}
+    .hero-dossier:after{content:'27SYS / WORKSHOP 01';position:absolute;left:38px;top:34px;z-index:3;color:rgba(255,255,255,.9);font-family:var(--mono);font-size:10px;letter-spacing:.13em}
+    .dossier-top,.dossier-main,.dossier-bottom,.dossier-mark{display:none!important}
+    .hero-visual:after{content:'HARDWARE / DIAGNOSTIC  ·  PC · COMPONENTS · TROUBLESHOOTING';position:absolute;left:38px;right:38px;bottom:30px;z-index:4;padding-top:14px;border-top:1px solid rgba(255,255,255,.28);color:rgba(255,255,255,.78);font-family:var(--mono);font-size:9px;letter-spacing:.1em}
+    @media(max-width:1050px){.hero-inner{grid-template-columns:1fr!important}.hero-visual{max-width:760px;width:100%;margin:10px auto 0}.hero-copy{max-width:850px}}
+    @media(max-width:700px){.hero{padding-top:125px!important}.hero-inner{gap:42px!important}.hero-visual{min-height:430px}.hero-dossier{height:430px!important;min-height:430px!important}.hero-dossier:after{left:24px;top:26px;font-size:8px}.hero-visual:after{left:24px;right:24px;bottom:22px;font-size:7px}.hero-facts span{margin-right:14px;padding-right:14px}}
+  `;
+  document.head.appendChild(style);
+})();
+
 (function(){
   const NEED_IMAGES=[
     'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1800&q=85',
