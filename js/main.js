@@ -64,6 +64,23 @@
   });
 
   /* --------------------------------------------------------------------
+   * 5bis. Liens WhatsApp par service ("Parler de ce besoin →")
+   *    Chaque carte de service porte un attribut data-wa-topic. On lui
+   *    construit un lien WhatsApp avec un message pré-rempli spécifique,
+   *    plus efficace qu'un simple "Contactez-nous" générique.
+   * ------------------------------------------------------------------ */
+  document.querySelectorAll(".bento-wa-link[data-wa-topic]").forEach(function (el) {
+    var topic = el.getAttribute("data-wa-topic");
+    var message = "Bonjour 27sys, j'aimerais avoir des informations concernant " + topic + ".";
+    el.setAttribute(
+      "href",
+      "https://wa.me/" + CONFIG.contact.whatsappNumber + "?text=" + encodeURIComponent(message)
+    );
+    el.setAttribute("target", "_blank");
+    el.setAttribute("rel", "noopener");
+  });
+
+  /* --------------------------------------------------------------------
    * 5. Tarif du diagnostic dans la FAQ (ne jamais inventer de prix)
    * ------------------------------------------------------------------ */
   var pricingAnswer = document.getElementById("faq-pricing-answer");
@@ -93,7 +110,6 @@
     });
     img.src = path;
   }
-  mountPhoto("hero-photo", "hero-photo-placeholder", CONFIG.images.heroPhoto);
   mountPhoto("about-photo", "about-photo-placeholder", CONFIG.images.aboutPhoto);
 
   /* --------------------------------------------------------------------
@@ -129,7 +145,7 @@
     },
     "url": CONFIG.seo.siteUrl,
     "description":
-      "Diagnostic et réparation PC, PC Gaming, Windows, hardware et réseau à Casablanca.",
+      "Dépannage informatique, installation de postes et réseaux pour professionnels, PC Gaming, hardware et Wi-Fi à Casablanca.",
   };
   var schemaScript = document.createElement("script");
   schemaScript.type = "application/ld+json";
@@ -188,7 +204,7 @@
    * 12. Apparition au défilement (scroll reveal)
    * ------------------------------------------------------------------ */
   var revealTargets = document.querySelectorAll(
-    ".bento-card, .method-step, .trust-item, .faq-item, .about-inner, .contact-inner"
+    ".bento-card, .ask-card, .skill-group, .method-step, .trust-item, .faq-item, .about-inner, .contact-inner"
   );
   revealTargets.forEach(function (el) { el.classList.add("reveal"); });
 

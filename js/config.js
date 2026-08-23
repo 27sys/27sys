@@ -5,14 +5,17 @@ const CONFIG = {
   business: {
     name: "27sys Services",
     shortName: "27sys",
-    tagline: "Dépannage informatique • PC Gaming • Hardware • Réseau",
+    tagline: "Particuliers • Professionnels • PC Gaming • Réseaux",
     city: "Casablanca",
     country: "Maroc",
     footerSignature: "27SYS // BUILDING SYSTEMS, ONE PC AT A TIME.",
   },
   contact: {
     whatsappNumber: "212640008930",
-    whatsappMessage: "Bonjour 27sys, j'ai un problème avec mon PC : ",
+    // Message par défaut (utilisé par les boutons WhatsApp généraux : en-tête, hero, contact).
+    // Chaque carte de service dans la section "Services" envoie automatiquement
+    // un message plus précis — voir data-wa-topic dans index.html.
+    whatsappMessage: "Bonjour 27sys, j'aimerais avoir des informations concernant : ",
     phoneDisplay: "+212 6 40 00 89 30",
     phoneHref: "+212640008930",
     email: "nbenramou@gmail.com",
@@ -31,8 +34,9 @@ const CONFIG = {
     homeVisitNote: "Déplacement à domicile facturé séparément, annoncé avant intervention.",
   },
   images: {
-    // Photo personnelle utilisée dans le hero et la section « À propos ».
-    heroPhoto: "https://raw.githubusercontent.com/Nizar404/27Sys_Service_Website/main/images/hero-technicien.webp.png?v=2",
+    // Photo personnelle utilisée uniquement dans la section « À propos ».
+    // (Le hero n'affiche plus de photo — voir la discussion sur la nouvelle
+    // page d'accueil : le panneau de diagnostic remplace la photo en haut de page.)
     aboutPhoto: "https://raw.githubusercontent.com/Nizar404/27Sys_Service_Website/main/images/hero-technicien.webp.png?v=2",
     ogImage: "",
   },

@@ -281,17 +281,32 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 }
 .hero-meta dd { font-size: 14.5px; font-weight: 500; }
 
-/* Visuel hero */
+/* Visuel hero — panneau de diagnostic autonome (aucune photo) */
 .hero-visual { position: relative; }
-.hero-photo-frame {
+.hero-visual-panel {
   position: relative;
   aspect-ratio: 4 / 5;
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--border-strong);
-  background: var(--surface);
+  background:
+    radial-gradient(ellipse at 25% 15%, rgba(0,217,255,0.09), transparent 55%),
+    radial-gradient(ellipse at 80% 90%, rgba(124,92,255,0.08), transparent 55%),
+    var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.hero-photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+.hero-visual-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(241,245,249,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(241,245,249,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 90%);
+}
 
 .photo-placeholder {
   position: absolute; inset: 0;
@@ -345,10 +360,10 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 
 /* Élément signature : console de diagnostic */
 .diag-console {
-  position: absolute;
-  left: -18px;
-  bottom: -28px;
-  width: 240px;
+  position: relative;
+  z-index: 1;
+  width: 88%;
+  max-width: 280px;
   background: rgba(17, 21, 28, 0.88);
   backdrop-filter: blur(8px);
   border: 1px solid var(--accent-border);
@@ -382,6 +397,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .diag-console-lines li:nth-child(3) { animation-delay: 1.05s; }
 .diag-console-lines li:nth-child(4) { animation-delay: 1.4s; }
 .diag-console-lines li:nth-child(5) { animation-delay: 1.75s; }
+.diag-console-lines li:nth-child(6) { animation-delay: 2.1s; }
 .diag-prompt { color: var(--accent); margin-right: 4px; }
 .diag-ok { color: var(--accent); }
 .diag-cursor { color: var(--accent); animation: blink 1s step-end infinite; }
@@ -406,7 +422,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 30px 26px 34px;
-  min-height: 210px;
+  min-height: 236px;
   display: flex;
   flex-direction: column;
   transition: border-color 0.25s var(--ease), transform 0.25s var(--ease), background 0.25s var(--ease);
@@ -469,19 +485,20 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .bento-indicator--dots span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes dot-cycle { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.9; } }
 
-.bento-indicator--chip {
+.chip-glyph {
   width: 20px; height: 20px;
   border: 1.5px solid var(--accent);
   border-radius: 3px;
   opacity: 0.6;
   position: relative;
 }
-.bento-indicator--chip::before {
+.chip-glyph::before {
   content: "";
   position: absolute; inset: 5px;
   border: 1px solid var(--accent);
   border-radius: 1px;
 }
+.bento-card:hover .chip-glyph { opacity: 0.9; }
 .bento-indicator--signal { gap: 3px; height: 16px; }
 .bento-indicator--signal span {
   width: 4px;
@@ -495,6 +512,113 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .bento-indicator--signal span:nth-child(4) { height: 18px; }
 .bento-card:hover .bento-indicator--signal span { opacity: 0.85; }
 .bento-indicator--pin { letter-spacing: 0.1em; color: var(--accent); }
+
+.bento-indicator--grid {
+  display: grid;
+  grid-template-columns: repeat(2, 6px);
+  grid-template-rows: repeat(2, 6px);
+  gap: 3px;
+}
+.bento-indicator--grid span {
+  background: var(--accent);
+  opacity: 0.4;
+  border-radius: 1px;
+}
+.bento-card:hover .bento-indicator--grid span { opacity: 0.85; }
+
+/* Lien "Parler de ce besoin →" au bas de chaque carte de service */
+.bento-wa-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: color 0.2s var(--ease);
+}
+.bento-wa-link:hover { color: var(--accent); }
+
+/* ---------- 7bis. POUR QUI (segments) ---------- */
+.segments { padding: 100px 0; border-top: 1px solid var(--border); }
+.segments-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+/* ---------- 7ter. VOUS AVEZ BESOIN DE QUOI (sélecteur) ---------- */
+.ask { padding: 100px 0; border-top: 1px solid var(--border); }
+.ask-sub {
+  margin-top: 14px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  max-width: 56ch;
+}
+.ask-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+.ask-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 26px 46px 26px 24px;
+  min-height: 128px;
+  transition: border-color 0.25s var(--ease), transform 0.25s var(--ease), background 0.25s var(--ease);
+}
+.ask-card:hover { border-color: var(--accent-border); transform: translateY(-3px); background: var(--surface-2); }
+.ask-card-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.02rem;
+}
+.ask-card-desc { color: var(--text-secondary); font-size: 13.5px; }
+.ask-card-arrow {
+  position: absolute;
+  top: 24px; right: 20px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  transition: transform 0.25s var(--ease);
+}
+.ask-card:hover .ask-card-arrow { transform: translateX(4px); }
+
+/* ---------- 7quater. EXPERTISE / CISCO ---------- */
+.expertise { padding: 100px 0; border-top: 1px solid var(--border); }
+.expertise-intro {
+  margin-top: 14px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  max-width: 62ch;
+}
+.skill-groups {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+.skill-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+}
+.skill-group h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.skill-group > p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+.skill-group .credentials { gap: 8px; margin: 0; }
+.skill-group .credentials li { font-size: 11.5px; padding: 7px 12px; }
 
 /* ---------- 8. MÉTHODE ---------- */
 .method { padding: 120px 0; border-top: 1px solid var(--border); }
@@ -759,6 +883,9 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   .contact-inner { grid-template-columns: 1fr; }
   .bento { grid-template-columns: repeat(2, 1fr); }
   .bento-card--wide { grid-column: span 2; }
+  .segments-grid { grid-template-columns: repeat(2, 1fr); }
+  .ask-grid { grid-template-columns: repeat(2, 1fr); }
+  .skill-groups { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 760px) {
@@ -780,6 +907,8 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 
   .bento { grid-template-columns: 1fr; }
   .bento-card--wide { grid-column: span 1; }
+  .segments-grid { grid-template-columns: 1fr; }
+  .ask-grid { grid-template-columns: 1fr; }
 
   .method-steps { grid-template-columns: 1fr; gap: 32px; }
 
@@ -787,15 +916,20 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 
   .mobile-wa-fab { display: flex; }
 
-  .diag-console { position: static; width: 100%; margin-top: 16px; left: 0; bottom: 0; }
-  .hero-photo-frame { aspect-ratio: 4 / 4.3; }
+  .hero-visual-panel { aspect-ratio: 4 / 3.4; }
+
+  .hero-sub { margin-bottom: 26px; }
+  .hero-ctas { margin-bottom: 30px; }
+  .hero-meta { padding-top: 16px; padding-bottom: 32px; }
 
   .footer-inner { flex-direction: column; }
 }
 
 @media (max-width: 480px) {
   .wrap { padding: 0 18px; }
-  .hero { padding-top: 128px; padding-bottom: 72px; }
+  .hero { padding-top: 116px; padding-bottom: 72px; }
+  .eyebrow { margin-bottom: 14px; }
+  .hero-title { font-size: 2.1rem; line-height: 1.16; }
   .services, .method, .about, .trust, .contact, .faq { padding: 84px 0; }
 }
 
