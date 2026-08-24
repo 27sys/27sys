@@ -105,3 +105,11 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   const style=document.createElement('style');style.id='ask-carousel-style';style.textContent=css;document.head.appendChild(style);if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mountCarousel);else mountCarousel();
 })();
+
+/* Load the free first-line 27sys troubleshooting assistant. */
+(function(){
+  var script=document.createElement('script');
+  script.src='js/chatbot.js?v=1';
+  script.defer=true;
+  document.head.appendChild(script);
+})();
