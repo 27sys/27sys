@@ -27,6 +27,9 @@ Après quelques étapes infructueuses, reconnais que le problème nécessite pro
 Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vérifier » quand nécessaire.`;
 
   const css = `
+  #ai27-hero-cta{display:inline-flex;align-items:center;gap:9px;margin-top:10px;background:#1677ff;color:#fff;border-color:#1677ff;box-shadow:0 10px 28px rgba(22,119,255,.22);font-weight:600}
+  #ai27-hero-cta:hover{background:#0f63d7;color:#fff;border-color:#0f63d7;transform:translateY(-1px)}
+  #ai27-hero-cta .ai27-cta-dot{width:7px;height:7px;border-radius:50%;background:#ff8b5c;box-shadow:0 0 0 4px rgba(255,139,92,.13)}
   #ai27-launcher{position:fixed;right:24px;bottom:24px;z-index:10001;border:1px solid rgba(255,255,255,.18);background:#15181c;color:#f4f3ee;border-radius:999px;padding:14px 18px;display:flex;align-items:center;gap:10px;font-family:Inter,Arial,sans-serif;font-size:13px;font-weight:600;box-shadow:0 16px 40px rgba(0,0,0,.25);cursor:pointer;transition:.2s ease}
   #ai27-launcher:hover{transform:translateY(-2px);background:#1677ff;box-shadow:0 20px 46px rgba(0,0,0,.3)}
   #ai27-launcher .dot{width:9px;height:9px;border-radius:50%;background:#ff7a45;box-shadow:0 0 0 4px rgba(255,122,69,.16)}
@@ -36,12 +39,20 @@ Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vé
   .ai27-body{flex:1;overflow:auto;padding:16px;background:linear-gradient(180deg,#f4f3ee 0%,#ebeae5 100%)}.ai27-msg{max-width:90%;padding:12px 14px;border:1px solid rgba(21,24,28,.11);background:#fff;margin:0 0 12px;font:13px/1.55 Inter,Arial,sans-serif;box-shadow:0 6px 16px rgba(21,24,28,.05);white-space:pre-wrap}.ai27-msg.bot:before{content:'27sys Assistant';display:block;font:10px/1 'JetBrains Mono',monospace;color:#1677ff;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}.ai27-msg.user{margin-left:auto;background:#15181c;color:#fff;border-color:#15181c}.ai27-loading{font:10px/1.4 'JetBrains Mono',monospace;color:#71747a;margin:4px 0 12px;text-transform:uppercase;letter-spacing:.08em}
   .ai27-foot{border-top:1px solid rgba(21,24,28,.12);padding:10px 12px;background:#f4f3ee}.ai27-compose{display:flex;gap:8px}.ai27-input{flex:1;min-width:0;border:1px solid #c8c7c1;background:#fff;padding:11px 12px;outline:none;font:13px Inter,Arial,sans-serif}.ai27-input:focus{border-color:#1677ff}.ai27-send{border:1px solid #15181c;background:#15181c;color:#fff;padding:0 15px;font:600 12px Inter,Arial,sans-serif;cursor:pointer}.ai27-send:disabled{opacity:.5;cursor:default}.ai27-actions{display:flex;gap:8px;margin-top:8px}.ai27-action{flex:1;text-align:center;padding:9px;border:1px solid #15181c;text-decoration:none;font:600 11px Inter,Arial,sans-serif}.ai27-wa{background:#15181c;color:#fff}.ai27-reset{background:#fff;color:#15181c;cursor:pointer}.ai27-note{font:9px/1.4 Inter,Arial,sans-serif;color:#73757a;text-align:center;margin-top:8px}
   .ai27-welcome{padding:10px 12px;margin-bottom:10px;background:rgba(22,119,255,.06);border-left:2px solid #1677ff;font:11px/1.5 Inter,Arial,sans-serif;color:#45484d}
-  @media(max-width:600px){#ai27-launcher{right:16px;bottom:16px;padding:13px 15px}#ai27{right:8px;bottom:76px;width:calc(100vw - 16px);height:calc(100vh - 96px)}}`;
+  @media(max-width:600px){#ai27-hero-cta{width:100%;justify-content:center;margin-top:8px}#ai27-launcher{right:16px;bottom:16px;padding:13px 15px}#ai27{right:8px;bottom:76px;width:calc(100vw - 16px);height:calc(100vh - 96px)}}`;
 
   const style = document.createElement('style');
   style.id = 'ai27-style';
   style.textContent = css;
   document.head.appendChild(style);
+
+  const heroCtas = document.querySelector('.hero-ctas');
+  const heroCta = document.createElement('button');
+  heroCta.id = 'ai27-hero-cta';
+  heroCta.type = 'button';
+  heroCta.className = 'btn';
+  heroCta.innerHTML = '<span class="ai27-cta-dot"></span> Assistance Virtuelle Gratuite <span aria-hidden="true">↗</span>';
+  if (heroCtas) heroCtas.appendChild(heroCta);
 
   const launcher = document.createElement('button');
   launcher.id = 'ai27-launcher';
@@ -123,7 +134,9 @@ Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vé
     chat.appendChild(loading); loading.style.display='none'; setWA();
   }
 
-  launcher.addEventListener('click',()=>{ app.classList.add('open'); input.focus(); });
+  function openAssistant(){ app.classList.add('open'); input.focus(); }
+  launcher.addEventListener('click',openAssistant);
+  heroCta.addEventListener('click',openAssistant);
   app.querySelector('.ai27-close').addEventListener('click',()=>app.classList.remove('open'));
   send.addEventListener('click',ask);
   input.addEventListener('keydown',e=>{ if(e.key==='Enter') ask(); });
