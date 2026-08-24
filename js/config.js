@@ -11,19 +11,13 @@ const CONFIG = {
   seo: { siteUrl:"https://www.27sys.ma" }
 };
 
-/* Keep the founder's personal LinkedIn in the À propos section.
-   All LinkedIn links in the footer point to the 27sys Services company page. */
-setTimeout(function () {
-  var companyLinkedin = CONFIG.social.companyLinkedin;
-  var footer = document.querySelector("footer");
-  if (footer) {
-    footer.querySelectorAll("a").forEach(function (link) {
-      if (link.href.indexOf("linkedin.com") !== -1 || link.getAttribute("data-cfg-href") === "social.linkedin") {
-        link.setAttribute("href", companyLinkedin);
-      }
-    });
-  }
-}, 0);
+/* LinkedIn mapping: personal profile only in À propos; company page in footer. */
+document.addEventListener("DOMContentLoaded", function () {
+  var personalLinkedin = document.getElementById("linkedin-link");
+  var footerLinkedin = document.getElementById("footer-linkedin");
+  if (personalLinkedin) personalLinkedin.href = CONFIG.social.linkedin;
+  if (footerLinkedin) footerLinkedin.href = CONFIG.social.companyLinkedin;
+});
 
 /* 27SYS HERO — full-screen workshop image behind the hero copy. */
 (function(){
