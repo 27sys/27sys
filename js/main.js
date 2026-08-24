@@ -195,7 +195,6 @@
 
     var heroStyle = document.createElement("style");
     heroStyle.textContent = `
-      /* Hero matching the approved 27sys workshop/editorial direction */
       .hero{min-height:850px;padding:142px 0 76px;background:var(--paper)}
       .hero-inner{grid-template-columns:minmax(0,.9fr) minmax(520px,1.1fr);gap:64px;align-items:center}
       .hero-copy{position:relative;z-index:4}
@@ -223,4 +222,54 @@
     `;
     document.head.appendChild(heroStyle);
   }
+
+  /* --------------------------------------------------------------------
+   * HERO CTA — Free virtual assistance
+   * This CTA is inserted directly into the first-screen CTA row and
+   * opens the existing AI assistant launcher when clicked.
+   * ------------------------------------------------------------------ */
+  (function mountVirtualAssistanceCTA() {
+    function mount() {
+      var ctas = document.querySelector(".hero-ctas");
+      if (!ctas || document.getElementById("hero-ai27-button")) return;
+
+      var button = document.createElement("button");
+      button.type = "button";
+      button.id = "hero-ai27-button";
+      button.className = "btn btn-ai-assistance";
+      button.textContent = "Assistance Virtuelle Gratuite ↗";
+      button.setAttribute("aria-label", "Ouvrir l'assistance virtuelle gratuite 27sys");
+      button.addEventListener("click", function () {
+        var assistantLauncher = document.getElementById("ai27-launcher");
+        if (assistantLauncher) {
+          assistantLauncher.click();
+          return;
+        }
+        var attempts = 0;
+        var retry = setInterval(function () {
+          attempts += 1;
+          var launcher = document.getElementById("ai27-launcher");
+          if (launcher) {
+            clearInterval(retry);
+            launcher.click();
+          } else if (attempts >= 20) {
+            clearInterval(retry);
+          }
+        }, 100);
+      });
+      ctas.appendChild(button);
+
+      var style = document.createElement("style");
+      style.textContent = `
+        .hero-ctas .btn-ai-assistance{border:1px solid rgba(255,255,255,.78);color:#fff;background:rgba(10,15,20,.24);box-shadow:0 8px 24px rgba(0,0,0,.16);backdrop-filter:blur(5px)}
+        .hero-ctas .btn-ai-assistance:hover{background:#1677ff;border-color:#1677ff;color:#fff;transform:translateY(-1px)}
+        .hero-ctas .btn-ai-assistance:focus-visible{outline:2px solid #8fd0ff;outline-offset:3px}
+        @media(max-width:760px){.hero-ctas .btn-ai-assistance{width:100%}}
+      `;
+      document.head.appendChild(style);
+    }
+
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
+    else mount();
+  })();
 })();
