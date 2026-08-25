@@ -1,3 +1,5 @@
+export const runtime = 'nodejs';
+
 const ALLOWED_ORIGINS = new Set([
   'https://27sys.github.io',
   'https://27sys.ma',
@@ -81,9 +83,7 @@ function normalizeHistory(input) {
       text: item.content.trim().slice(0, 1800)
     }))
     .filter(item => item.text);
-
   while (raw.length && raw[0].role !== 'user') raw.shift();
-
   const merged = [];
   for (const item of raw.slice(-6)) {
     const last = merged[merged.length - 1];
@@ -101,101 +101,73 @@ async function callGemini(apiKey, contents, stream) {
   const endpoint = stream
     ? `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:streamGenerateContent?alt=sse`
     : `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
-
   return fetch(endpoint, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': apiKey
-    },
+    headers: {'Content-Type': 'application/json','x-goog-api-key': apiKey},
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
       contents,
-      generationConfig: {
-        maxOutputTokens: 220,
-        thinkingConfig: { thinkingLevel: 'low' }
-      }
+      generationConfig: { maxOutputTokens: 220, thinkingConfig: { thinkingLevel: 'low' } }
     })
   });
 }
 
 export default async function handler(req, res) {
   const origin = req.headers.origin || '';
-
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;
     for (const [key, value] of Object.entries(corsHeaders(origin))) res.setHeader(key, value);
     return res.end();
   }
-
-  if (req.method === 'GET') {
-    return sendJson(res, 200, { ok: true, service: '27sys Gemini Assistant', model: MODEL }, origin);
-  }
-
-  if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method not allowed' }, origin);
+  if (req.method === 'GET') return sendJson(res, 200, {ok:true, service:'27sys Gemini Assistant', model:MODEL}, origin);
+  if (req.method !== 'POST') return sendJson(res, 405, {error:'Method not allowed'}, origin);
 
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return sendJson(res, 500, { error: 'Gemini API key is not configured on Vercel.' }, origin);
+  if (!apiKey) return sendJson(res, 500, {error:'Gemini API key is not configured on Vercel.'}, origin);
 
   let body;
-  try { body = parseBody(req); }
-  catch { return sendJson(res, 400, { error: 'Invalid JSON body.' }, origin); }
-
+  try { body = parseBody(req); } catch { return sendJson(res, 400, {error:'Invalid JSON body.'}, origin); }
   const history = normalizeHistory(body?.history);
-  if (!history.length || history[history.length - 1].role !== 'user') {
-    return sendJson(res, 400, { error: 'The last conversation turn must be a user message.' }, origin);
-  }
-
+  if (!history.length || history[history.length - 1].role !== 'user') return sendJson(res, 400, {error:'The last conversation turn must be a user message.'}, origin);
   const contents = toContents(history);
 
   try {
     let upstream = await callGemini(apiKey, contents, true);
-
     if (!upstream.ok || !upstream.body) {
-      const detail = await upstream.text().catch(() => 'Unknown Gemini streaming error');
+      const detail = await upstream.text().catch(()=>'Unknown Gemini streaming error');
       console.error('Gemini stream request failed:', upstream.status, detail);
       upstream = await callGemini(apiKey, contents, false);
     }
-
     if (!upstream.ok) {
-      const detail = await upstream.text().catch(() => 'Unknown Gemini error');
+      const detail = await upstream.text().catch(()=>'Unknown Gemini error');
       console.error('Gemini request failed:', upstream.status, detail);
-      return sendJson(res, 502, { error: 'Gemini request failed.' }, origin);
+      return sendJson(res, 502, {error:'Gemini request failed.'}, origin);
     }
 
-    const contentType = upstream.headers.get('content-type') || '';
-
-    if (!contentType.includes('text/event-stream')) {
+    const type = upstream.headers.get('content-type') || '';
+    if (!type.includes('text/event-stream')) {
       const data = await upstream.json();
-      const answer = data?.candidates?.[0]?.content?.parts?.map(part => part?.text || '').join('').trim();
-      if (!answer) return sendJson(res, 502, { error: 'Gemini returned no text.' }, origin);
-      return sendJson(res, 200, { response: answer }, origin);
+      const answer = data?.candidates?.[0]?.content?.parts?.map(p=>p?.text||'').join('').trim();
+      if (!answer) return sendJson(res, 502, {error:'Gemini returned no text.'}, origin);
+      return sendJson(res, 200, {response:answer}, origin);
     }
 
     res.statusCode = 200;
-    for (const [key, value] of Object.entries({
-      ...corsHeaders(origin),
-      'Content-Type': 'text/event-stream; charset=utf-8',
-      'Cache-Control': 'no-cache, no-transform',
-      'X-Accel-Buffering': 'no',
-      'Connection': 'keep-alive'
-    })) res.setHeader(key, value);
+    for (const [key, value] of Object.entries({...corsHeaders(origin),'Content-Type':'text/event-stream; charset=utf-8','Cache-Control':'no-cache, no-transform','X-Accel-Buffering':'no','Connection':'keep-alive'})) res.setHeader(key, value);
     if (typeof res.flushHeaders === 'function') res.flushHeaders();
 
     const reader = upstream.body.getReader();
     try {
       while (true) {
-        const { value, done } = await reader.read();
+        const {value, done} = await reader.read();
         if (done) break;
         if (value) res.write(Buffer.from(value));
       }
-    } finally {
-      try { reader.releaseLock(); } catch {}
-    }
+    } finally { try { reader.releaseLock(); } catch {} }
     return res.end();
   } catch (error) {
     console.error('/api/chat error:', error);
-    if (!res.headersSent) return sendJson(res, 500, { error: 'Internal server error.' }, origin);
+    if (!res.headersSent) return sendJson(res, 500, {error:'Internal server error.'}, origin);
     return res.end();
   }
 }
