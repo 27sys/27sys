@@ -3,8 +3,8 @@
  * Browser-side LLM using Transformers.js + Qwen2.5-0.5B-Instruct.
  * No API key, no paid API and no server required.
  *
- * The support popup is created immediately. The LLM library/model is loaded
- * only when the visitor actually opens/sends a request to the assistant.
+ * The floating assistant is the single entry point. The LLM/model is loaded
+ * only after the visitor opens the assistant and sends a message.
  */
 (() => {
   'use strict';
@@ -14,33 +14,26 @@
   const TRANSFORMERS_URL = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1';
   let generator = null;
   let loadingPromise = null;
-  let pipelineFn = null;
   const history = [];
 
   const SYSTEM = `Tu es « 27sys Assistant », l’assistant gratuit de premier niveau de 27sys Services à Casablanca.
 Tu réponds uniquement en français, avec des phrases courtes, simples et professionnelles.
 Ton rôle est de guider un particulier ou une petite entreprise dans un dépannage de base pour ordinateur, téléphone, tablette, TV ou imprimante.
-Tu dois poser UNE question simple à la fois avant de proposer une procédure lorsque le problème n’est pas encore clair.
+Pose UNE question simple à la fois lorsque le problème n’est pas encore clair.
 Ne donne que des manipulations réversibles et à faible risque : redémarrer, vérifier un câble, vérifier un réglage, reconnecter un réseau, vérifier une file d’impression, libérer un peu d’espace, vérifier les mises à jour, tester un autre câble/port/appareil.
 Ne conseille jamais d’ouvrir un appareil, de toucher au secteur, de manipuler une batterie gonflée, de faire une réparation électrique, de flasher un firmware, de contourner un mot de passe, de supprimer des données, de réinitialiser un appareil ou d’installer un logiciel douteux sans validation humaine.
 Si le client signale fumée, odeur de brûlé, chaleur anormale, liquide, batterie gonflée, étincelles, choc électrique ou risque de perte de données, arrête immédiatement le dépannage et recommande de ne plus utiliser l’appareil et de contacter 27sys.
-Ne prétends jamais avoir effectué une action à distance et ne prétends jamais connaître le modèle exact si le client ne l’a pas donné.
 Ne demande jamais de mot de passe, code PIN, code de carte, donnée bancaire ou autre secret.
-Après quelques étapes infructueuses, reconnais que le problème nécessite probablement un diagnostic humain et propose le bouton WhatsApp 27sys.
-Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vérifier » quand nécessaire.`;
+Après quelques étapes infructueuses, dis que le problème nécessite probablement un diagnostic humain et propose WhatsApp 27sys.
+Ne prétends jamais avoir effectué une action à distance. Ne donne pas de fausse certitude.`;
 
   const css = `
-  /* Floating support invitation: visible after page load and follows the viewport while scrolling. */
   #ai27-launcher{position:fixed;right:24px;bottom:24px;z-index:10001;border:1px solid rgba(21,24,28,.14);background:#15181c;color:#fff;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;font-family:Inter,Arial,sans-serif;font-size:13px;font-weight:600;box-shadow:0 18px 44px rgba(0,0,0,.22);cursor:pointer;transition:transform .25s ease,box-shadow .25s ease,background .25s ease,opacity .25s ease;opacity:0;transform:translateY(18px);pointer-events:none;max-width:330px;text-align:left}
   #ai27-launcher.ai27-visible{opacity:1;transform:translateY(0);pointer-events:auto}
   #ai27-launcher:hover{transform:translateY(-3px);background:#1677ff;box-shadow:0 24px 54px rgba(0,0,0,.28)}
   #ai27-launcher .ai27-avatar{width:38px;height:38px;min-width:38px;border:1px solid rgba(255,255,255,.22);display:grid;place-items:center;font:700 13px/1 Inter,Arial,sans-serif;background:rgba(255,255,255,.05)}
   #ai27-launcher .ai27-invite{display:flex;flex-direction:column;gap:3px}.ai27-invite strong{font:700 13px/1.2 'Space Grotesk',Arial,sans-serif}.ai27-invite span{font:10px/1.3 Inter,Arial,sans-serif;color:rgba(255,255,255,.68)}
-  #ai27-launcher .ai27-close{margin-left:auto;width:24px;height:24px;border:0;background:transparent;color:rgba(255,255,255,.62);font-size:18px;line-height:1;cursor:pointer;padding:0}
-
-  #ai27-hero-cta{display:inline-flex;align-items:center;gap:9px;margin-top:10px;background:#1677ff;color:#fff;border-color:#1677ff;box-shadow:0 10px 28px rgba(22,119,255,.22);font-weight:600}
-  #ai27-hero-cta:hover{background:#0f63d7;color:#fff;border-color:#0f63d7;transform:translateY(-1px)}
-  #ai27-hero-cta .ai27-cta-dot{width:7px;height:7px;border-radius:50%;background:#ff8b5c;box-shadow:0 0 0 4px rgba(255,139,92,.13)}
+  #ai27-launcher .ai27-dismiss{margin-left:auto;width:24px;height:24px;border:0;background:transparent;color:rgba(255,255,255,.62);font-size:18px;line-height:1;cursor:pointer;padding:0}
 
   #ai27{position:fixed;right:24px;bottom:24px;width:min(430px,calc(100vw - 32px));height:min(680px,calc(100vh - 48px));z-index:10002;background:#f4f3ee;color:#15181c;border:1px solid rgba(21,24,28,.14);box-shadow:0 30px 90px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden}
   #ai27.open{display:flex}
@@ -48,28 +41,19 @@ Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vé
   .ai27-body{flex:1;overflow:auto;padding:16px;background:linear-gradient(180deg,#f4f3ee 0%,#ebeae5 100%)}.ai27-msg{max-width:90%;padding:12px 14px;border:1px solid rgba(21,24,28,.11);background:#fff;margin:0 0 12px;font:13px/1.55 Inter,Arial,sans-serif;box-shadow:0 6px 16px rgba(21,24,28,.05);white-space:pre-wrap}.ai27-msg.bot:before{content:'27sys Assistant';display:block;font:10px/1 'JetBrains Mono',monospace;color:#1677ff;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}.ai27-msg.user{margin-left:auto;background:#15181c;color:#fff;border-color:#15181c}.ai27-loading{font:10px/1.4 'JetBrains Mono',monospace;color:#71747a;margin:4px 0 12px;text-transform:uppercase;letter-spacing:.08em}
   .ai27-foot{border-top:1px solid rgba(21,24,28,.12);padding:10px 12px;background:#f4f3ee}.ai27-compose{display:flex;gap:8px}.ai27-input{flex:1;min-width:0;border:1px solid #c8c7c1;background:#fff;padding:11px 12px;outline:none;font:13px Inter,Arial,sans-serif}.ai27-input:focus{border-color:#1677ff}.ai27-send{border:1px solid #15181c;background:#15181c;color:#fff;padding:0 15px;font:600 12px Inter,Arial,sans-serif;cursor:pointer}.ai27-send:disabled{opacity:.5;cursor:default}.ai27-actions{display:flex;gap:8px;margin-top:8px}.ai27-action{flex:1;text-align:center;padding:9px;border:1px solid #15181c;text-decoration:none;font:600 11px Inter,Arial,sans-serif}.ai27-wa{background:#15181c;color:#fff}.ai27-reset{background:#fff;color:#15181c;cursor:pointer}.ai27-note{font:9px/1.4 Inter,Arial,sans-serif;color:#73757a;text-align:center;margin-top:8px}
   .ai27-welcome{padding:10px 12px;margin-bottom:10px;background:rgba(22,119,255,.06);border-left:2px solid #1677ff;font:11px/1.5 Inter,Arial,sans-serif;color:#45484d}
-  @media(max-width:600px){#ai27-launcher{right:14px;bottom:14px;max-width:calc(100vw - 28px);padding:12px 13px}#ai27-launcher .ai27-avatar{width:34px;height:34px;min-width:34px}#ai27{right:8px;bottom:8px;width:calc(100vw - 16px);height:calc(100vh - 16px)}#ai27-hero-cta{width:100%;justify-content:center;margin-top:8px}}`;
+  @media(max-width:600px){#ai27-launcher{right:14px;bottom:14px;max-width:calc(100vw - 28px);padding:12px 13px}#ai27-launcher .ai27-avatar{width:34px;height:34px;min-width:34px}#ai27{right:8px;bottom:8px;width:calc(100vw - 16px);height:calc(100vh - 16px)}}`;
 
   const style = document.createElement('style');
   style.id = 'ai27-style';
   style.textContent = css;
   document.head.appendChild(style);
 
-  // Hero CTA opens the assistant but does not load the model until needed.
-  const heroCtas = document.querySelector('.hero-ctas');
-  const heroCta = document.createElement('button');
-  heroCta.id = 'ai27-hero-cta';
-  heroCta.type = 'button';
-  heroCta.className = 'btn';
-  heroCta.innerHTML = '<span class="ai27-cta-dot"></span> Assistance Virtuelle Gratuite <span aria-hidden="true">↗</span>';
-  if (heroCtas) heroCtas.appendChild(heroCta);
-
-  // Floating support invitation shown automatically after the website settles.
+  // One entry point only: the floating assistance popup.
   const launcher = document.createElement('button');
   launcher.id = 'ai27-launcher';
   launcher.type = 'button';
   launcher.setAttribute('aria-label', 'Ouvrir l’assistance virtuelle gratuite 27sys');
-  launcher.innerHTML = '<span class="ai27-avatar">27</span><span class="ai27-invite"><strong>Assistance Virtuelle Gratuite</strong><span>Un problème informatique ? Je peux vous guider.</span></span><span class="ai27-close" aria-hidden="true">×</span>';
+  launcher.innerHTML = '<span class="ai27-avatar">27</span><span class="ai27-invite"><strong>Assistance Virtuelle Gratuite</strong><span>Un problème informatique ? Je peux vous guider.</span></span><span class="ai27-dismiss" aria-hidden="true">×</span>';
   document.body.appendChild(launcher);
 
   const app = document.createElement('section');
@@ -99,17 +83,37 @@ Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vé
     wa.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
   }
 
+  function fallbackAnswer(text){
+    const q = text.toLowerCase();
+    if (/(wifi|wi-fi|internet|connexion|réseau)/i.test(q)) return 'Commençons simplement : est-ce que votre téléphone ou un autre appareil connecté au même Wi‑Fi a Internet ?';
+    if (/(lent|ralenti|slow)/i.test(q) && /(pc|ordinateur|laptop)/i.test(q)) return 'Sur votre PC, ouvrez le Gestionnaire des tâches avec Ctrl + Shift + Échap. Regardez si le CPU, la mémoire ou le disque reste proche de 100 %. Dites-moi lequel est élevé.';
+    if (/(écran noir|black screen|pas d'image)/i.test(q)) return 'Le PC semble-t-il démarrer normalement : ventilateurs, voyants ou sons ?';
+    if (/(charge|charger|batterie)/i.test(q)) return 'Avez-vous essayé un autre câble et un autre chargeur fiables ? Ne forcez rien dans le port de charge.';
+    if (/(imprimante|printer)/i.test(q)) return 'Votre imprimante est-elle allumée et apparaît-elle comme « hors ligne » sur le PC ?';
+    if (/(tv|télé)/i.test(q)) return 'Quel est le problème principal de votre TV : Internet/Wi‑Fi, HDMI, son, image ou application ?';
+    return 'Je peux vous aider. Quel appareil pose problème : ordinateur, téléphone, tablette, TV ou imprimante, et que se passe-t-il exactement ?';
+  }
+
+  function extractAnswer(output){
+    const generated = output?.[0]?.generated_text;
+    if (Array.isArray(generated)) {
+      const last = generated[generated.length - 1];
+      if (last && typeof last.content === 'string') return last.content.trim();
+    }
+    if (typeof generated === 'string') return generated.trim();
+    return '';
+  }
+
   async function loadModel(){
     if(generator) return generator;
     if(loadingPromise) return loadingPromise;
     loadingPromise = (async()=>{
-      const mod = await import(TRANSFORMERS_URL + '?v=27sys-2');
-      pipelineFn = mod.pipeline;
+      const mod = await import(TRANSFORMERS_URL + '?v=27sys-3');
       const preferred = ('gpu' in navigator) ? 'webgpu' : 'wasm';
       try{
-        generator = await pipelineFn('text-generation', MODEL, { dtype:'q4', device:preferred });
+        generator = await mod.pipeline('text-generation', MODEL, { dtype:'q4', device:preferred });
       }catch(err){
-        generator = await pipelineFn('text-generation', MODEL, { dtype:'q4', device:'wasm' });
+        generator = await mod.pipeline('text-generation', MODEL, { dtype:'q4', device:'wasm' });
       }
       return generator;
     })();
@@ -120,20 +124,21 @@ Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vé
     const text = input.value.trim();
     if(!text || send.disabled) return;
     input.value=''; add(text,true); history.push({role:'user',content:text}); setWA();
-    send.disabled=true; loading.style.display='block'; loading.textContent='Chargement / génération de la réponse…'; scroll();
+    send.disabled=true; loading.style.display='block'; loading.textContent='Chargement de l’IA…'; scroll();
     try{
-      const gen = await loadModel();
+      const gen = await Promise.race([
+        loadModel(),
+        new Promise((_, reject)=>setTimeout(()=>reject(new Error('AI_TIMEOUT')), 25000))
+      ]);
+      loading.textContent='Génération de la réponse…';
       const recent = history.slice(-8);
       const messages = [{role:'system',content:SYSTEM}, ...recent];
       const out = await gen(messages,{max_new_tokens:180, do_sample:true, temperature:0.25, top_p:0.9});
-      const generated = out?.[0]?.generated_text;
-      let answer = generated?.[generated.length-1]?.content || '';
-      if(!answer && typeof generated === 'string') answer = generated;
-      answer = String(answer).trim();
-      if(!answer) answer = 'Je n’ai pas réussi à générer une réponse. Contactez 27sys pour que je prenne le relais.';
+      const answer = extractAnswer(out) || fallbackAnswer(text);
       add(answer,false); history.push({role:'assistant',content:answer}); setWA();
     }catch(err){
-      add('Je rencontre un problème avec l’assistant IA dans votre navigateur. Vous pouvez tout de suite contacter 27sys sur WhatsApp.',false);
+      const answer = fallbackAnswer(text);
+      add(answer,false); history.push({role:'assistant',content:answer}); setWA();
     }finally{
       loading.style.display='none'; send.disabled=false; input.focus(); scroll();
     }
@@ -151,26 +156,24 @@ Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vé
     input.focus();
   }
 
-  function showInvitation(){
-    if(!app.classList.contains('open') && !sessionStorage.getItem('ai27-invite-dismissed')){
-      window.setTimeout(()=>launcher.classList.add('ai27-visible'), 1800);
-    }
-  }
-
   launcher.addEventListener('click',(event)=>{
-    if(event.target && event.target.classList.contains('ai27-close')){
+    if(event.target && event.target.classList.contains('ai27-dismiss')){
       event.stopPropagation();
       launcher.classList.remove('ai27-visible');
-      sessionStorage.setItem('ai27-invite-dismissed','1');
       return;
     }
     openAssistant();
   });
-  heroCta.addEventListener('click',openAssistant);
   app.querySelector('.ai27-head .ai27-close').addEventListener('click',()=>app.classList.remove('open'));
   send.addEventListener('click',ask);
   input.addEventListener('keydown',e=>{ if(e.key==='Enter') ask(); });
   document.getElementById('ai27-reset').addEventListener('click',reset);
   setWA();
-  showInvitation();
+
+  function showInvitation(){
+    if(app.classList.contains('open')) return;
+    window.setTimeout(()=>launcher.classList.add('ai27-visible'), 1800);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded',showInvitation);
+  else showInvitation();
 })();
