@@ -32,7 +32,7 @@
     }catch(err){
       console.error('27sys Assistant:',err);
       loadingState(false);
-      add(`Je rencontre un problème avec l’assistance : ${err?.message||'erreur inconnue'}`+'\n\nTu peux réessayer ou contacter 27sys sur WhatsApp.',false,true);
+      add('Je rencontre momentanément un problème avec l’assistance virtuelle. Vous pouvez contacter directement 27sys sur WhatsApp.',false,true);
     }finally{loadingState(false);send.disabled=false;input.focus();scroll()}
   }
 

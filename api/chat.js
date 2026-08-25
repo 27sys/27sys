@@ -1,12 +1,17 @@
 export const runtime = 'nodejs';
 
-const MODEL = 'gemini-3.7-flash';
+// Modèle principal (le plus capable), puis modèle de secours stable si le
+// principal est temporairement surchargé côté Google (429 / 503).
+const PRIMARY_MODEL = 'gemini-3.7-flash';
+const FALLBACK_MODEL = 'gemini-2.5-flash-lite';
 
 const SYSTEM_INSTRUCTION = `Tu es 27sys Assistant, le technicien virtuel de 27sys Services à Casablanca.
 
 Tu dois avoir une vraie conversation de dépannage, naturelle et utile.
 Comprends le français naturel, les fautes, les abréviations, le langage familier, le mélange français/darija et les phrases incomplètes.
 Le client ne doit jamais avoir besoin de reformuler son problème.
+
+PÉRIMÈTRE STRICT : tu ne réponds qu'aux questions de dépannage informatique/électronique (PC, Windows, hardware, PC Gaming, Wi-Fi/réseau, téléphones, tablettes, TV, imprimantes). Si on te demande autre chose (rédaction, devoirs, code, sujet sans rapport), dis brièvement que tu es uniquement l'assistant de dépannage 27sys et redemande le problème technique.
 
 CONVERSATION
 - Parle comme un technicien humain, calme, direct et naturel.
@@ -103,22 +108,43 @@ function toContents(history) {
   return history.map(item => ({ role: item.role, parts: [{ text: item.text }] }));
 }
 
-async function callGemini(apiKey, contents) {
-  return fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': apiKey
-    },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
-      contents,
-      generationConfig: {
-        maxOutputTokens: 220,
-        thinkingConfig: { thinkingLevel: 'low' }
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Appelle un modèle Gemini avec un délai maximum, pour ne jamais rester
+// bloqué si Google est lent à répondre (le visiteur ne doit jamais attendre
+// indéfiniment un "..." qui ne se termine pas).
+async function callModel(model, apiKey, contents, timeoutMs) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const upstream = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+          contents,
+          generationConfig: {
+            maxOutputTokens: 220,
+            thinkingConfig: { thinkingLevel: 'low' }
+          }
+        }),
+        signal: controller.signal
       }
-    })
-  });
+    );
+    const rawText = await upstream.text();
+    return { ok: upstream.ok, status: upstream.status, rawText };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function isRetryableStatus(status) {
+  // 429 = quota/rate limit dépassé, 503 = modèle temporairement surchargé côté Google
+  return status === 429 || status === 503;
 }
 
 export default async function handler(req, res) {
@@ -134,7 +160,7 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     if (!apiKey) return sendJson(res, 500, { ok: false, error: 'GEMINI_API_KEY is missing in Production.' }, origin);
-    return sendJson(res, 200, { ok: true, service: '27sys Gemini Assistant', model: MODEL, keyConfigured: true }, origin);
+    return sendJson(res, 200, { ok: true, service: '27sys Gemini Assistant', model: PRIMARY_MODEL, fallbackModel: FALLBACK_MODEL, keyConfigured: true }, origin);
   }
 
   if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method not allowed' }, origin);
@@ -152,37 +178,61 @@ export default async function handler(req, res) {
     return sendJson(res, 400, { error: 'The last conversation turn must be a user message.' }, origin);
   }
 
-  try {
-    const upstream = await callGemini(apiKey, toContents(history));
-    const rawText = await upstream.text();
+  const contents = toContents(history);
 
-    if (!upstream.ok) {
-      console.error('Gemini HTTP error', upstream.status, rawText);
-      let detail = 'Gemini request failed.';
-      try {
-        const parsed = JSON.parse(rawText);
-        detail = parsed?.error?.message || detail;
-      } catch {}
-      return sendJson(res, 502, { error: detail, providerStatus: upstream.status }, origin);
-    }
+  // Ordre d'essai : modèle principal -> nouvel essai après une courte pause
+  // -> modèle de secours stable. Chaque tentative a son propre délai maximum
+  // pour rester dans le temps d'exécution autorisé par Vercel (voir vercel.json).
+  const attempts = [
+    { model: PRIMARY_MODEL, timeoutMs: 9000 },
+    { model: PRIMARY_MODEL, timeoutMs: 9000, delayBeforeMs: 500 },
+    { model: FALLBACK_MODEL, timeoutMs: 8000 }
+  ];
 
-    let data;
+  let lastError = 'Unknown Gemini error';
+  let lastProviderStatus = null;
+
+  for (const attempt of attempts) {
+    if (attempt.delayBeforeMs) await wait(attempt.delayBeforeMs);
+
+    let result;
     try {
-      data = JSON.parse(rawText);
+      result = await callModel(attempt.model, apiKey, contents, attempt.timeoutMs);
+    } catch (err) {
+      lastError = err?.name === 'AbortError' ? 'Gemini request timed out.' : (err?.message || 'Network error');
+      console.error('Gemini call failed', attempt.model, lastError);
+      continue;
+    }
+
+    if (result.ok) {
+      let data;
+      try {
+        data = JSON.parse(result.rawText);
+      } catch {
+        console.error('Gemini returned invalid JSON', attempt.model, result.rawText);
+        lastError = 'Gemini returned an invalid response.';
+        continue;
+      }
+      const answer = data?.candidates?.[0]?.content?.parts?.map(part => part?.text || '').join('').trim();
+      if (answer) return sendJson(res, 200, { response: answer, model: attempt.model }, origin);
+      lastError = 'Gemini returned no text.';
+      console.error(lastError, attempt.model, result.rawText);
+      continue;
+    }
+
+    lastProviderStatus = result.status;
+    try {
+      const parsed = JSON.parse(result.rawText);
+      lastError = parsed?.error?.message || `HTTP ${result.status}`;
     } catch {
-      console.error('Gemini returned invalid JSON', rawText);
-      return sendJson(res, 502, { error: 'Gemini returned an invalid response.' }, origin);
+      lastError = `HTTP ${result.status}`;
     }
+    console.error('Gemini HTTP error', attempt.model, result.status, result.rawText);
 
-    const answer = data?.candidates?.[0]?.content?.parts?.map(part => part?.text || '').join('').trim();
-    if (!answer) {
-      console.error('Gemini returned no text', rawText);
-      return sendJson(res, 502, { error: 'Gemini returned no text.' }, origin);
-    }
-
-    return sendJson(res, 200, { response: answer, model: MODEL }, origin);
-  } catch (error) {
-    console.error('/api/chat error', error);
-    return sendJson(res, 500, { error: 'Internal server error.' }, origin);
+    // Erreur non temporaire (clé invalide, requête malformée, contenu bloqué...) :
+    // inutile d'insister avec d'autres modèles, on arrête tout de suite.
+    if (!isRetryableStatus(result.status)) break;
   }
+
+  return sendJson(res, 502, { error: lastError, providerStatus: lastProviderStatus }, origin);
 }
