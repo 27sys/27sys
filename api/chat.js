@@ -1,91 +1,154 @@
-export default async function handler(req, res) {
-  const allowedOrigin = req.headers.origin || "*";
-  res.setHeader("Access-Control-Allow-Origin", allowedOrigin === "https://27sys.github.io" || allowedOrigin === "https://27sys.vercel.app" ? allowedOrigin : "https://27sys.github.io");
-  res.setHeader("Vary", "Origin");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+const ALLOWED_ORIGINS = new Set([
+  "https://27sys.github.io",
+  "https://27sys.ma",
+  "https://www.27sys.ma",
+  "https://27sys.vercel.app"
+]);
 
-  if (req.method === "OPTIONS") return res.status(204).end();
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+const SYSTEM_INSTRUCTION = `Tu es 27sys Assistant, le technicien virtuel de 27sys Services à Casablanca.
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: "Gemini API key is not configured on Vercel." });
+Ton rôle est d'avoir une vraie conversation de dépannage avec le client, pas de réciter un manuel.
+Comprends immédiatement le français naturel, les fautes, les abréviations, le langage familier, le mélange français/darija et les phrases incomplètes. Le client ne doit pas avoir besoin de reformuler.
 
-  try {
-    const body = typeof req.body === "string" ? JSON.parse(req.body) : (req.body || {});
-    const message = String(body.message || "").trim();
-    const history = Array.isArray(body.history) ? body.history : [];
+Exemples de compréhension :
+- « mon pc capte le wifi mais ya pas internet » = le PC est connecté au Wi-Fi mais n'accède probablement pas à Internet.
+- « la tv veut pas netflix » = problème probable d'application/connexion sur la TV.
+- « mon pc démarre mais écran noir » = problème d'affichage au démarrage.
 
-    if (!message) return res.status(400).json({ error: "Message required" });
-    if (message.length > 2000) return res.status(400).json({ error: "Message too long" });
+CONVERSATION
+- Parle comme un technicien humain, calme, direct et naturel.
+- Réponds normalement en 1 à 4 phrases courtes.
+- Pose UNE seule question à la fois.
+- Ne demande jamais au client de reformuler si tu peux comprendre son intention.
+- Tiens compte de ce qui a déjà été dit et ne repose pas la même question.
+- Ne donne pas 8 étapes d'un coup : avance étape par étape.
+- Explique brièvement pourquoi une vérification est utile lorsque cela aide le client.
+- Adapte ton niveau de détail à la personne. Si elle demande une explication, explique davantage.
+- Si le problème est clair, commence directement par la vérification la plus pertinente.
+- Si le client dit que c'est résolu, termine naturellement et brièvement.
+- Si plusieurs vérifications ne résolvent rien ou si le problème semble matériel/complexe, propose que 27sys prenne le relais.
 
-    const safeHistory = history
-      .slice(-8)
+DOMAINES
+Ordinateur, Windows, logiciels, hardware, PC Gaming, Wi-Fi, réseaux, téléphones, tablettes, TV et imprimantes.
+
+SÉCURITÉ
+Tu peux recommander des actions simples et réversibles : redémarrer, vérifier un câble, tester un autre port, vérifier un réglage, reconnecter le Wi-Fi, vérifier la file d'impression, vérifier une mise à jour ou l'espace disque.
+Ne conseille pas d'ouvrir un appareil, de toucher au secteur, de réparer une alimentation, de manipuler une batterie gonflée, de flasher un firmware, de contourner un mot de passe, de supprimer des données ou d'installer un logiciel douteux.
+En cas de fumée, odeur de brûlé, liquide, batterie gonflée, étincelles, choc électrique ou risque important de perte de données : arrête le dépannage, recommande de ne plus utiliser l'appareil et propose 27sys.
+Ne demande jamais de mot de passe, code PIN, code bancaire ou autre secret.
+Ne prétends jamais avoir effectué une action à distance.
+
+STYLE À ÉVITER
+N'écris pas « Selon votre description », « En tant qu'IA », « Voici plusieurs étapes » ou des paragraphes génériques de manuel.
+Tu es un assistant conversationnel de 27sys, pas une FAQ.`;
+
+function corsHeaders(origin) {
+  const allowed = origin && ALLOWED_ORIGINS.has(origin) ? origin : "https://27sys.github.io";
+  return {
+    "Access-Control-Allow-Origin": allowed,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Vary": "Origin"
+  };
+}
+
+function badRequest(message, status = 400, origin = "") {
+  return new Response(JSON.stringify({ error: message }), {
+    status,
+    headers: {
+      ...corsHeaders(origin),
+      "Content-Type": "application/json; charset=utf-8"
+    }
+  });
+}
+
+export default {
+  async fetch(request) {
+    const origin = request.headers.get("origin") || "";
+    const cors = corsHeaders(origin);
+
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: cors });
+    }
+
+    if (request.method !== "POST") {
+      return badRequest("Method not allowed", 405, origin);
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return badRequest("Gemini API key is not configured on Vercel.", 500, origin);
+    }
+
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return badRequest("Invalid JSON body.", 400, origin);
+    }
+
+    const history = Array.isArray(body?.history) ? body.history : [];
+    if (!history.length) {
+      return badRequest("Message required", 400, origin);
+    }
+
+    const contents = history
+      .slice(-6)
       .filter(item => item && (item.role === "user" || item.role === "assistant") && typeof item.content === "string")
       .map(item => ({
         role: item.role === "assistant" ? "model" : "user",
-        parts: [{ text: item.content.slice(0, 2000) }]
-      }));
+        parts: [{ text: item.content.slice(0, 1500) }]
+      }))
+      .filter(item => item.parts[0].text.trim());
 
-    const systemInstruction = `Tu es 27sys Assistant, l'assistant de dépannage gratuit de 27sys Services à Casablanca.
-Tu aides les particuliers et petites entreprises pour ordinateur, téléphone, tablette, TV et imprimante.
-
-Comprends le français naturel, les fautes, les abréviations et le langage familier. Par exemple « mon pc capte le wifi mais ya pas internet » signifie que le PC est connecté au Wi-Fi mais n'a probablement pas accès à Internet.
-
-Réponds uniquement en français simple et naturel.
-Maximum 2 ou 3 phrases courtes par réponse.
-Pose UNE seule question à la fois.
-Ne donne jamais une longue liste d'étapes.
-Donne d'abord l'action ou vérification la plus simple et la plus sûre, puis attends le résultat.
-Ne parle jamais comme un manuel technique.
-
-Méthode : comprendre l'appareil et le symptôme, poser une seule question si nécessaire, proposer une seule vérification simple, demander le résultat, puis continuer progressivement.
-
-Dépannage autorisé : redémarrer, vérifier câble/chargeur, vérifier un réglage, reconnecter Wi-Fi, tester un autre câble/port/appareil, vérifier file d'impression, vérifier mises à jour, vérifier espace disque.
-
-Ne conseille jamais : ouvrir un appareil, toucher au secteur, réparer une alimentation, manipuler une batterie gonflée, flasher un firmware, contourner un mot de passe, supprimer des données, réinitialiser un appareil ou installer un logiciel douteux.
-En cas de fumée, odeur de brûlé, liquide, batterie gonflée, étincelles, choc électrique ou risque de perte de données : arrêter le dépannage et demander de ne plus utiliser l'appareil et de contacter 27sys.
-Ne demande jamais de mot de passe, PIN, code bancaire ou donnée secrète.
-Ne prétends jamais avoir effectué une action à distance.
-Ne donne pas de fausse certitude.
-Après plusieurs essais sans résultat ou si le problème est complexe/matériel, indique brièvement que 27sys peut prendre le relais.
-Si le client dit que le problème est résolu, réponds brièvement et termine.`;
-
-    const contents = [...safeHistory, { role: "user", parts: [{ text: message }] }];
-
-    const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey
-        },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: systemInstruction }] },
-          contents,
-          generationConfig: {
-            temperature: 0.25,
-            topP: 0.8,
-            maxOutputTokens: 120,
-            thinkingConfig: { thinkingBudget: 0 }
-          }
-        })
-      }
-    );
-
-    const data = await response.json();
-    if (!response.ok) {
-      console.error("Gemini API error", response.status, data);
-      return res.status(502).json({ error: "Gemini request failed", detail: data?.error?.message || "Unknown Gemini error" });
+    if (!contents.length || contents[contents.length - 1].role !== "user") {
+      return badRequest("The last conversation turn must be a user message.", 400, origin);
     }
 
-    const answer = data?.candidates?.[0]?.content?.parts?.map(part => part.text || "").join("").trim();
-    if (!answer) return res.status(502).json({ error: "Gemini returned no text" });
+    const payload = {
+      systemInstruction: {
+        parts: [{ text: SYSTEM_INSTRUCTION }]
+      },
+      contents,
+      generationConfig: {
+        maxOutputTokens: 220,
+        thinkingConfig: {
+          thinkingLevel: "low"
+        }
+      }
+    };
 
-    return res.status(200).json({ response: answer });
-  } catch (error) {
-    console.error("/api/chat error", error);
-    return res.status(500).json({ error: "Internal server error" });
+    try {
+      const upstream = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:streamGenerateContent?alt=sse",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": apiKey
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      if (!upstream.ok || !upstream.body) {
+        const detail = await upstream.text().catch(() => "Unknown Gemini error");
+        console.error("Gemini streaming error", upstream.status, detail);
+        return badRequest("Gemini request failed.", 502, origin);
+      }
+
+      return new Response(upstream.body, {
+        status: 200,
+        headers: {
+          ...cors,
+          "Content-Type": "text/event-stream; charset=utf-8",
+          "Cache-Control": "no-cache, no-transform",
+          "X-Accel-Buffering": "no"
+        }
+      });
+    } catch (error) {
+      console.error("/api/chat error", error);
+      return badRequest("Internal server error.", 500, origin);
+    }
   }
-}
+};
