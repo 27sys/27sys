@@ -1,9 +1,11 @@
 const ALLOWED_ORIGINS = new Set([
-  "https://27sys.github.io",
-  "https://27sys.ma",
-  "https://www.27sys.ma",
-  "https://27sys.vercel.app"
+  'https://27sys.github.io',
+  'https://27sys.ma',
+  'https://www.27sys.ma',
+  'https://27sys.vercel.app'
 ]);
+
+const MODEL = 'gemini-3.7-flash';
 
 const SYSTEM_INSTRUCTION = `Tu es 27sys Assistant, le technicien virtuel de 27sys Services à Casablanca.
 
@@ -43,112 +45,157 @@ N'écris pas « Selon votre description », « En tant qu'IA », « Voici plusie
 Tu es un assistant conversationnel de 27sys, pas une FAQ.`;
 
 function corsHeaders(origin) {
-  const allowed = origin && ALLOWED_ORIGINS.has(origin) ? origin : "https://27sys.github.io";
+  const allowed = origin && ALLOWED_ORIGINS.has(origin) ? origin : 'https://27sys.github.io';
   return {
-    "Access-Control-Allow-Origin": allowed,
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Vary": "Origin"
+    'Access-Control-Allow-Origin': allowed,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin'
   };
 }
 
-function badRequest(message, status = 400, origin = "") {
-  return new Response(JSON.stringify({ error: message }), {
-    status,
-    headers: {
-      ...corsHeaders(origin),
-      "Content-Type": "application/json; charset=utf-8"
-    }
-  });
+function sendJson(res, status, payload, origin) {
+  const body = JSON.stringify(payload);
+  res.statusCode = status;
+  for (const [key, value] of Object.entries({
+    ...corsHeaders(origin),
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'no-store'
+  })) res.setHeader(key, value);
+  res.end(body);
 }
 
-export default {
-  async fetch(request) {
-    const origin = request.headers.get("origin") || "";
-    const cors = corsHeaders(origin);
+function parseBody(req) {
+  if (!req.body) return {};
+  if (typeof req.body === 'object') return req.body;
+  if (typeof req.body === 'string') return JSON.parse(req.body);
+  return {};
+}
 
-    if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: cors });
-    }
+function normalizeHistory(input) {
+  if (!Array.isArray(input)) return [];
+  const raw = input
+    .filter(item => item && (item.role === 'user' || item.role === 'assistant') && typeof item.content === 'string')
+    .map(item => ({
+      role: item.role === 'assistant' ? 'model' : 'user',
+      text: item.content.trim().slice(0, 1800)
+    }))
+    .filter(item => item.text);
 
-    if (request.method !== "POST") {
-      return badRequest("Method not allowed", 405, origin);
-    }
+  while (raw.length && raw[0].role !== 'user') raw.shift();
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return badRequest("Gemini API key is not configured on Vercel.", 500, origin);
-    }
+  const merged = [];
+  for (const item of raw.slice(-6)) {
+    const last = merged[merged.length - 1];
+    if (last && last.role === item.role) last.text += `\n${item.text}`;
+    else merged.push({ ...item });
+  }
+  return merged;
+}
 
-    let body;
-    try {
-      body = await request.json();
-    } catch {
-      return badRequest("Invalid JSON body.", 400, origin);
-    }
+function toContents(history) {
+  return history.map(item => ({ role: item.role, parts: [{ text: item.text }] }));
+}
 
-    const history = Array.isArray(body?.history) ? body.history : [];
-    if (!history.length) {
-      return badRequest("Message required", 400, origin);
-    }
+async function callGemini(apiKey, contents, stream) {
+  const endpoint = stream
+    ? `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:streamGenerateContent?alt=sse`
+    : `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
-    const contents = history
-      .slice(-6)
-      .filter(item => item && (item.role === "user" || item.role === "assistant") && typeof item.content === "string")
-      .map(item => ({
-        role: item.role === "assistant" ? "model" : "user",
-        parts: [{ text: item.content.slice(0, 1500) }]
-      }))
-      .filter(item => item.parts[0].text.trim());
-
-    if (!contents.length || contents[contents.length - 1].role !== "user") {
-      return badRequest("The last conversation turn must be a user message.", 400, origin);
-    }
-
-    const payload = {
-      systemInstruction: {
-        parts: [{ text: SYSTEM_INSTRUCTION }]
-      },
+  return fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-goog-api-key': apiKey
+    },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
       contents,
       generationConfig: {
         maxOutputTokens: 220,
-        thinkingConfig: {
-          thinkingLevel: "low"
-        }
+        thinkingConfig: { thinkingLevel: 'low' }
       }
-    };
+    })
+  });
+}
 
-    try {
-      const upstream = await fetch(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:streamGenerateContent?alt=sse",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-goog-api-key": apiKey
-          },
-          body: JSON.stringify(payload)
-        }
-      );
+export default async function handler(req, res) {
+  const origin = req.headers.origin || '';
 
-      if (!upstream.ok || !upstream.body) {
-        const detail = await upstream.text().catch(() => "Unknown Gemini error");
-        console.error("Gemini streaming error", upstream.status, detail);
-        return badRequest("Gemini request failed.", 502, origin);
-      }
-
-      return new Response(upstream.body, {
-        status: 200,
-        headers: {
-          ...cors,
-          "Content-Type": "text/event-stream; charset=utf-8",
-          "Cache-Control": "no-cache, no-transform",
-          "X-Accel-Buffering": "no"
-        }
-      });
-    } catch (error) {
-      console.error("/api/chat error", error);
-      return badRequest("Internal server error.", 500, origin);
-    }
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 204;
+    for (const [key, value] of Object.entries(corsHeaders(origin))) res.setHeader(key, value);
+    return res.end();
   }
-};
+
+  if (req.method === 'GET') {
+    return sendJson(res, 200, { ok: true, service: '27sys Gemini Assistant', model: MODEL }, origin);
+  }
+
+  if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method not allowed' }, origin);
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return sendJson(res, 500, { error: 'Gemini API key is not configured on Vercel.' }, origin);
+
+  let body;
+  try { body = parseBody(req); }
+  catch { return sendJson(res, 400, { error: 'Invalid JSON body.' }, origin); }
+
+  const history = normalizeHistory(body?.history);
+  if (!history.length || history[history.length - 1].role !== 'user') {
+    return sendJson(res, 400, { error: 'The last conversation turn must be a user message.' }, origin);
+  }
+
+  const contents = toContents(history);
+
+  try {
+    let upstream = await callGemini(apiKey, contents, true);
+
+    if (!upstream.ok || !upstream.body) {
+      const detail = await upstream.text().catch(() => 'Unknown Gemini streaming error');
+      console.error('Gemini stream request failed:', upstream.status, detail);
+      upstream = await callGemini(apiKey, contents, false);
+    }
+
+    if (!upstream.ok) {
+      const detail = await upstream.text().catch(() => 'Unknown Gemini error');
+      console.error('Gemini request failed:', upstream.status, detail);
+      return sendJson(res, 502, { error: 'Gemini request failed.' }, origin);
+    }
+
+    const contentType = upstream.headers.get('content-type') || '';
+
+    if (!contentType.includes('text/event-stream')) {
+      const data = await upstream.json();
+      const answer = data?.candidates?.[0]?.content?.parts?.map(part => part?.text || '').join('').trim();
+      if (!answer) return sendJson(res, 502, { error: 'Gemini returned no text.' }, origin);
+      return sendJson(res, 200, { response: answer }, origin);
+    }
+
+    res.statusCode = 200;
+    for (const [key, value] of Object.entries({
+      ...corsHeaders(origin),
+      'Content-Type': 'text/event-stream; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      'X-Accel-Buffering': 'no',
+      'Connection': 'keep-alive'
+    })) res.setHeader(key, value);
+    if (typeof res.flushHeaders === 'function') res.flushHeaders();
+
+    const reader = upstream.body.getReader();
+    try {
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        if (value) res.write(Buffer.from(value));
+      }
+    } finally {
+      try { reader.releaseLock(); } catch {}
+    }
+    return res.end();
+  } catch (error) {
+    console.error('/api/chat error:', error);
+    if (!res.headersSent) return sendJson(res, 500, { error: 'Internal server error.' }, origin);
+    return res.end();
+  }
+}
