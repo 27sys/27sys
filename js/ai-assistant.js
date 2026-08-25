@@ -3,9 +3,8 @@
  * Browser-side LLM using Transformers.js + Qwen2.5-0.5B-Instruct.
  * No API key, no paid API and no server required.
  *
- * The UI is intentionally created before loading the LLM library.
- * This means a CDN/model loading problem cannot prevent the button/chat
- * from appearing on the website.
+ * The support popup is created immediately. The LLM library/model is loaded
+ * only when the visitor actually opens/sends a request to the assistant.
  */
 (() => {
   'use strict';
@@ -31,26 +30,32 @@ Après quelques étapes infructueuses, reconnais que le problème nécessite pro
 Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vérifier » quand nécessaire.`;
 
   const css = `
+  /* Floating support invitation: visible after page load and follows the viewport while scrolling. */
+  #ai27-launcher{position:fixed;right:24px;bottom:24px;z-index:10001;border:1px solid rgba(21,24,28,.14);background:#15181c;color:#fff;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;font-family:Inter,Arial,sans-serif;font-size:13px;font-weight:600;box-shadow:0 18px 44px rgba(0,0,0,.22);cursor:pointer;transition:transform .25s ease,box-shadow .25s ease,background .25s ease,opacity .25s ease;opacity:0;transform:translateY(18px);pointer-events:none;max-width:330px;text-align:left}
+  #ai27-launcher.ai27-visible{opacity:1;transform:translateY(0);pointer-events:auto}
+  #ai27-launcher:hover{transform:translateY(-3px);background:#1677ff;box-shadow:0 24px 54px rgba(0,0,0,.28)}
+  #ai27-launcher .ai27-avatar{width:38px;height:38px;min-width:38px;border:1px solid rgba(255,255,255,.22);display:grid;place-items:center;font:700 13px/1 Inter,Arial,sans-serif;background:rgba(255,255,255,.05)}
+  #ai27-launcher .ai27-invite{display:flex;flex-direction:column;gap:3px}.ai27-invite strong{font:700 13px/1.2 'Space Grotesk',Arial,sans-serif}.ai27-invite span{font:10px/1.3 Inter,Arial,sans-serif;color:rgba(255,255,255,.68)}
+  #ai27-launcher .ai27-close{margin-left:auto;width:24px;height:24px;border:0;background:transparent;color:rgba(255,255,255,.62);font-size:18px;line-height:1;cursor:pointer;padding:0}
+
   #ai27-hero-cta{display:inline-flex;align-items:center;gap:9px;margin-top:10px;background:#1677ff;color:#fff;border-color:#1677ff;box-shadow:0 10px 28px rgba(22,119,255,.22);font-weight:600}
   #ai27-hero-cta:hover{background:#0f63d7;color:#fff;border-color:#0f63d7;transform:translateY(-1px)}
   #ai27-hero-cta .ai27-cta-dot{width:7px;height:7px;border-radius:50%;background:#ff8b5c;box-shadow:0 0 0 4px rgba(255,139,92,.13)}
-  #ai27-launcher{position:fixed;right:24px;bottom:24px;z-index:10001;border:1px solid rgba(255,255,255,.18);background:#15181c;color:#f4f3ee;border-radius:999px;padding:14px 18px;display:flex;align-items:center;gap:10px;font-family:Inter,Arial,sans-serif;font-size:13px;font-weight:600;box-shadow:0 16px 40px rgba(0,0,0,.25);cursor:pointer;transition:.2s ease}
-  #ai27-launcher:hover{transform:translateY(-2px);background:#1677ff;box-shadow:0 20px 46px rgba(0,0,0,.3)}
-  #ai27-launcher .dot{width:9px;height:9px;border-radius:50%;background:#ff7a45;box-shadow:0 0 0 4px rgba(255,122,69,.16)}
-  #ai27{position:fixed;right:24px;bottom:86px;width:min(430px,calc(100vw - 32px));height:min(680px,calc(100vh - 120px));z-index:10002;background:#f4f3ee;color:#15181c;border:1px solid rgba(21,24,28,.14);box-shadow:0 30px 90px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden}
+
+  #ai27{position:fixed;right:24px;bottom:24px;width:min(430px,calc(100vw - 32px));height:min(680px,calc(100vh - 48px));z-index:10002;background:#f4f3ee;color:#15181c;border:1px solid rgba(21,24,28,.14);box-shadow:0 30px 90px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden}
   #ai27.open{display:flex}
-  .ai27-head{background:#15181c;color:#f4f3ee;padding:17px 18px;display:flex;justify-content:space-between;align-items:center}.ai27-brand{display:flex;gap:11px;align-items:center}.ai27-mark{width:34px;height:34px;border:1px solid rgba(255,255,255,.25);display:grid;place-items:center;font:700 13px Inter,Arial,sans-serif}.ai27-brand strong{display:block;font:700 15px/1 'Space Grotesk',Arial,sans-serif}.ai27-brand small{display:block;margin-top:5px;color:rgba(255,255,255,.58);font:10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase}.ai27-close{border:0;background:none;color:#fff;font-size:22px;cursor:pointer;padding:4px}
+  .ai27-head{background:#15181c;color:#f4f3ee;padding:17px 18px;display:flex;justify-content:space-between;align-items:center}.ai27-brand{display:flex;gap:11px;align-items:center}.ai27-mark{width:34px;height:34px;border:1px solid rgba(255,255,255,.25);display:grid;place-items:center;font:700 13px Inter,Arial,sans-serif}.ai27-brand strong{display:block;font:700 15px/1 'Space Grotesk',Arial,sans-serif}.ai27-brand small{display:block;margin-top:5px;color:rgba(255,255,255,.58);font:10px/1 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase}.ai27-head .ai27-close{border:0;background:none;color:#fff;font-size:22px;cursor:pointer;padding:4px}
   .ai27-body{flex:1;overflow:auto;padding:16px;background:linear-gradient(180deg,#f4f3ee 0%,#ebeae5 100%)}.ai27-msg{max-width:90%;padding:12px 14px;border:1px solid rgba(21,24,28,.11);background:#fff;margin:0 0 12px;font:13px/1.55 Inter,Arial,sans-serif;box-shadow:0 6px 16px rgba(21,24,28,.05);white-space:pre-wrap}.ai27-msg.bot:before{content:'27sys Assistant';display:block;font:10px/1 'JetBrains Mono',monospace;color:#1677ff;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}.ai27-msg.user{margin-left:auto;background:#15181c;color:#fff;border-color:#15181c}.ai27-loading{font:10px/1.4 'JetBrains Mono',monospace;color:#71747a;margin:4px 0 12px;text-transform:uppercase;letter-spacing:.08em}
   .ai27-foot{border-top:1px solid rgba(21,24,28,.12);padding:10px 12px;background:#f4f3ee}.ai27-compose{display:flex;gap:8px}.ai27-input{flex:1;min-width:0;border:1px solid #c8c7c1;background:#fff;padding:11px 12px;outline:none;font:13px Inter,Arial,sans-serif}.ai27-input:focus{border-color:#1677ff}.ai27-send{border:1px solid #15181c;background:#15181c;color:#fff;padding:0 15px;font:600 12px Inter,Arial,sans-serif;cursor:pointer}.ai27-send:disabled{opacity:.5;cursor:default}.ai27-actions{display:flex;gap:8px;margin-top:8px}.ai27-action{flex:1;text-align:center;padding:9px;border:1px solid #15181c;text-decoration:none;font:600 11px Inter,Arial,sans-serif}.ai27-wa{background:#15181c;color:#fff}.ai27-reset{background:#fff;color:#15181c;cursor:pointer}.ai27-note{font:9px/1.4 Inter,Arial,sans-serif;color:#73757a;text-align:center;margin-top:8px}
   .ai27-welcome{padding:10px 12px;margin-bottom:10px;background:rgba(22,119,255,.06);border-left:2px solid #1677ff;font:11px/1.5 Inter,Arial,sans-serif;color:#45484d}
-  @media(max-width:600px){#ai27-hero-cta{width:100%;justify-content:center;margin-top:8px}#ai27-launcher{right:16px;bottom:16px;padding:13px 15px}#ai27{right:8px;bottom:76px;width:calc(100vw - 16px);height:calc(100vh - 96px)}}`;
+  @media(max-width:600px){#ai27-launcher{right:14px;bottom:14px;max-width:calc(100vw - 28px);padding:12px 13px}#ai27-launcher .ai27-avatar{width:34px;height:34px;min-width:34px}#ai27{right:8px;bottom:8px;width:calc(100vw - 16px);height:calc(100vh - 16px)}#ai27-hero-cta{width:100%;justify-content:center;margin-top:8px}}`;
 
   const style = document.createElement('style');
   style.id = 'ai27-style';
   style.textContent = css;
   document.head.appendChild(style);
 
-  // Create the hero CTA immediately, independently of the LLM CDN.
+  // Hero CTA opens the assistant but does not load the model until needed.
   const heroCtas = document.querySelector('.hero-ctas');
   const heroCta = document.createElement('button');
   heroCta.id = 'ai27-hero-cta';
@@ -59,10 +64,12 @@ Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vé
   heroCta.innerHTML = '<span class="ai27-cta-dot"></span> Assistance Virtuelle Gratuite <span aria-hidden="true">↗</span>';
   if (heroCtas) heroCtas.appendChild(heroCta);
 
+  // Floating support invitation shown automatically after the website settles.
   const launcher = document.createElement('button');
   launcher.id = 'ai27-launcher';
   launcher.type = 'button';
-  launcher.innerHTML = '<span class="dot"></span> Assistant 27sys';
+  launcher.setAttribute('aria-label', 'Ouvrir l’assistance virtuelle gratuite 27sys');
+  launcher.innerHTML = '<span class="ai27-avatar">27</span><span class="ai27-invite"><strong>Assistance Virtuelle Gratuite</strong><span>Un problème informatique ? Je peux vous guider.</span></span><span class="ai27-close" aria-hidden="true">×</span>';
   document.body.appendChild(launcher);
 
   const app = document.createElement('section');
@@ -96,7 +103,7 @@ Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vé
     if(generator) return generator;
     if(loadingPromise) return loadingPromise;
     loadingPromise = (async()=>{
-      const mod = await import(TRANSFORMERS_URL + '?v=27sys-1');
+      const mod = await import(TRANSFORMERS_URL + '?v=27sys-2');
       pipelineFn = mod.pipeline;
       const preferred = ('gpu' in navigator) ? 'webgpu' : 'wasm';
       try{
@@ -117,10 +124,7 @@ Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vé
     try{
       const gen = await loadModel();
       const recent = history.slice(-8);
-      const messages = [
-        {role:'system',content:SYSTEM},
-        ...recent
-      ];
+      const messages = [{role:'system',content:SYSTEM}, ...recent];
       const out = await gen(messages,{max_new_tokens:180, do_sample:true, temperature:0.25, top_p:0.9});
       const generated = out?.[0]?.generated_text;
       let answer = generated?.[generated.length-1]?.content || '';
@@ -141,12 +145,32 @@ Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vé
     chat.appendChild(loading); loading.style.display='none'; setWA();
   }
 
-  function openAssistant(){ app.classList.add('open'); input.focus(); }
-  launcher.addEventListener('click',openAssistant);
+  function openAssistant(){
+    app.classList.add('open');
+    launcher.classList.remove('ai27-visible');
+    input.focus();
+  }
+
+  function showInvitation(){
+    if(!app.classList.contains('open') && !sessionStorage.getItem('ai27-invite-dismissed')){
+      window.setTimeout(()=>launcher.classList.add('ai27-visible'), 1800);
+    }
+  }
+
+  launcher.addEventListener('click',(event)=>{
+    if(event.target && event.target.classList.contains('ai27-close')){
+      event.stopPropagation();
+      launcher.classList.remove('ai27-visible');
+      sessionStorage.setItem('ai27-invite-dismissed','1');
+      return;
+    }
+    openAssistant();
+  });
   heroCta.addEventListener('click',openAssistant);
-  app.querySelector('.ai27-close').addEventListener('click',()=>app.classList.remove('open'));
+  app.querySelector('.ai27-head .ai27-close').addEventListener('click',()=>app.classList.remove('open'));
   send.addEventListener('click',ask);
   input.addEventListener('keydown',e=>{ if(e.key==='Enter') ask(); });
   document.getElementById('ai27-reset').addEventListener('click',reset);
   setWA();
+  showInvitation();
 })();
