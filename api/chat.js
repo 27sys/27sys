@@ -3,7 +3,7 @@ export const runtime = 'nodejs';
 // Modèle principal (le plus capable), puis modèle de secours stable si le
 // principal est temporairement surchargé côté Google (429 / 503).
 const PRIMARY_MODEL = 'gemini-3.7-flash';
-const FALLBACK_MODEL = 'gemini-2.5-flash-lite';
+const FALLBACK_MODEL = 'gemini-3.6-flash';
 
 const SYSTEM_INSTRUCTION = `Tu es 27sys Assistant, le technicien virtuel de 27sys Services à Casablanca.
 
