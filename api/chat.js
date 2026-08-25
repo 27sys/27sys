@@ -1,12 +1,5 @@
 export const runtime = 'nodejs';
 
-const ALLOWED_ORIGINS = new Set([
-  'https://27sys.github.io',
-  'https://27sys.ma',
-  'https://www.27sys.ma',
-  'https://27sys.vercel.app'
-]);
-
 const MODEL = 'gemini-3.7-flash';
 
 const SYSTEM_INSTRUCTION = `Tu es 27sys Assistant, le technicien virtuel de 27sys Services à Casablanca.
@@ -40,8 +33,25 @@ STYLE
 N'écris pas « Selon votre description », « En tant qu'IA », « Voici plusieurs étapes » ou des paragraphes génériques de manuel.
 Tu es un assistant conversationnel de 27sys, pas une FAQ.`;
 
+function isAllowedOrigin(origin) {
+  if (!origin) return false;
+  try {
+    const url = new URL(origin);
+    const host = url.hostname.toLowerCase();
+    return (
+      host === '27sys.github.io' ||
+      host === '27sys.ma' ||
+      host === 'www.27sys.ma' ||
+      host === '27sys.vercel.app' ||
+      (host.endsWith('.vercel.app') && host.startsWith('27sys-'))
+    );
+  } catch {
+    return false;
+  }
+}
+
 function corsHeaders(origin) {
-  const allowed = origin && ALLOWED_ORIGINS.has(origin) ? origin : 'https://27sys.github.io';
+  const allowed = isAllowedOrigin(origin) ? origin : 'https://27sys.github.io';
   return {
     'Access-Control-Allow-Origin': allowed,
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
