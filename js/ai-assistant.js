@@ -2,16 +2,20 @@
  * 27SYS AI ASSISTANT
  * Browser-side LLM using Transformers.js + Qwen2.5-0.5B-Instruct.
  * No API key, no paid API and no server required.
+ *
+ * The UI is intentionally created before loading the LLM library.
+ * This means a CDN/model loading problem cannot prevent the button/chat
+ * from appearing on the website.
  */
-import { pipeline } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1';
-
 (() => {
   'use strict';
 
   const WA_NUMBER = '212640008930';
   const MODEL = 'onnx-community/Qwen2.5-0.5B-Instruct';
+  const TRANSFORMERS_URL = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1';
   let generator = null;
   let loadingPromise = null;
+  let pipelineFn = null;
   const history = [];
 
   const SYSTEM = `Tu es « 27sys Assistant », l’assistant gratuit de premier niveau de 27sys Services à Casablanca.
@@ -46,6 +50,7 @@ Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vé
   style.textContent = css;
   document.head.appendChild(style);
 
+  // Create the hero CTA immediately, independently of the LLM CDN.
   const heroCtas = document.querySelector('.hero-ctas');
   const heroCta = document.createElement('button');
   heroCta.id = 'ai27-hero-cta';
@@ -91,11 +96,13 @@ Ne donne pas de fausse certitude. Dis clairement « probablement » ou « à vé
     if(generator) return generator;
     if(loadingPromise) return loadingPromise;
     loadingPromise = (async()=>{
+      const mod = await import(TRANSFORMERS_URL + '?v=27sys-1');
+      pipelineFn = mod.pipeline;
       const preferred = ('gpu' in navigator) ? 'webgpu' : 'wasm';
       try{
-        generator = await pipeline('text-generation', MODEL, { dtype:'q4', device:preferred });
+        generator = await pipelineFn('text-generation', MODEL, { dtype:'q4', device:preferred });
       }catch(err){
-        generator = await pipeline('text-generation', MODEL, { dtype:'q4', device:'wasm' });
+        generator = await pipelineFn('text-generation', MODEL, { dtype:'q4', device:'wasm' });
       }
       return generator;
     })();
