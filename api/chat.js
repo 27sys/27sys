@@ -121,7 +121,10 @@ async function callModel(model, apiKey, contents, timeoutMs) {
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
         contents,
-        generationConfig: { maxOutputTokens: 220, thinkingConfig: { thinkingLevel: 'low' } }
+        generationConfig: {
+          maxOutputTokens: 600,
+          thinkingConfig: { thinkingLevel: 'low' }
+        }
       }),
       signal: controller.signal
     });
@@ -178,9 +181,6 @@ export default async function handler(req, res) {
   let lastProviderStatus = null;
   const startIndex = Math.floor(Date.now() / 1000) % keys.length;
 
-  // We try each configured key. This only increases the effective capacity
-  // when the keys belong to different Google Cloud projects; Google applies
-  // Gemini rate limits per project, not per API key.
   for (let offset = 0; offset < keys.length; offset++) {
     const keyIndex = (startIndex + offset) % keys.length;
     const apiKey = keys[keyIndex];
@@ -224,14 +224,11 @@ export default async function handler(req, res) {
       lastError = extractError(result.rawText, result.status);
       console.error('Gemini HTTP error', { keyIndex, model: attempt.model, status: result.status, error: lastError });
 
-      // Invalid / forbidden key: immediately rotate to the next key.
       if (isKeyError(result.status)) {
         moveToNextKey = true;
         break;
       }
 
-      // For quota or temporary overload, try the fallback model for the same key,
-      // then move on to the next key if it still cannot answer.
       if (!isRetryableStatus(result.status)) break;
     }
 
