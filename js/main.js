@@ -187,7 +187,7 @@
   var heroDossier = document.querySelector(".hero-dossier");
   if (heroDossier) {
     heroDossier.innerHTML =
-      '<img class="hero-workshop-photo" src="images/hero-technicien.webp.png" alt="Technicien travaillant sur un PC ouvert dans un atelier informatique" loading="eager">' +
+      '<img class="hero-workshop-photo" src="images/hero-technicien.webp" alt="Technicien travaillant sur un PC ouvert dans un atelier informatique" loading="eager">' +
       '<div class="hero-photo-overlay"></div>' +
       '<div class="hero-photo-meta"><span>27SYS / WORKSHOP 01</span><span>CASABLANCA / MA</span></div>' +
       '<div class="hero-photo-badge"><span class="status-dot"></span>INTERVENTION TECHNIQUE</div>' +
