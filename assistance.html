@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="27sys — assistant IT gratuit : arbre de diagnostic interactif pour téléphones, ordinateurs, réseaux, imprimantes, téléviseurs et objets connectés.">
+  <title>Assistance IT gratuite — 27sys Services</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/webp" href="images/27sys-logo.webp">
+  <link rel="stylesheet" href="css/assistance.css">
+</head>
+<body>
+  <div class="grid-bg" aria-hidden="true"></div>
+  <header class="assist-header">
+    <a class="brand" href="index.html" aria-label="Retour à 27sys">
+      <span class="brand-mark">27</span><span>SYS</span>
+      <small>Services informatiques</small>
+    </a>
+    <div class="header-actions">
+      <a href="index.html" class="header-link">Retour au site</a>
+      <a href="https://wa.me/212640008930" target="_blank" rel="noopener" class="header-wa">WhatsApp ↗</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="assist-hero">
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span>27SYS / ASSISTANCE N1 / GRATUITE</p>
+        <h1>Diagnostiquer comme un<br><em>technicien.</em></h1>
+        <p class="hero-text">Choisissez votre équipement, affinez le problème, puis suivez un arbre de diagnostic conçu pour les premières vérifications utiles. Pas de réponse inventée : chaque branche mène à une action ou à une décision claire.</p>
+        <div class="hero-pills"><span>Sans compte</span><span>Sans IA obligatoire</span><span>Procédures guidées</span><span>WhatsApp si nécessaire</span></div>
+      </div>
+      <div class="brain-panel">
+        <div class="brain-label">LOGIQUE DE DIAGNOSTIC</div>
+        <div class="brain-graph">
+          <div class="brain-orb center">27</div>
+          <span class="node n1">APPAREIL</span>
+          <span class="node n2">SYMPTÔME</span>
+          <span class="node n3">CAUSE</span>
+          <span class="node n4">TEST</span>
+          <span class="node n5">RÉSULTAT</span>
+          <span class="node n6">SOLUTION</span>
+          <i class="line l1"></i><i class="line l2"></i><i class="line l3"></i><i class="line l4"></i><i class="line l5"></i><i class="line l6"></i>
+        </div>
+        <div class="brain-foot">La procédure s'adapte à vos réponses et peut revenir en arrière à tout moment.</div>
+      </div>
+    </section>
+
+    <section class="how-it-works">
+      <div class="section-label">01 / COMMENT ÇA MARCHE ?</div>
+      <div class="how-grid">
+        <article><b>01</b><h2>Choisissez l'équipement</h2><p>Téléphone, ordinateur, réseau, imprimante, TV ou objet connecté.</p></article>
+        <article><b>02</b><h2>Affinez le contexte</h2><p>Système, type d'équipement et grande famille de marque.</p></article>
+        <article><b>03</b><h2>Décrivez le symptôme</h2><p>Pas d'Internet, écran noir, imprimante hors ligne, batterie, etc.</p></article>
+        <article><b>04</b><h2>Suivez le diagnostic</h2><p>Une question, un test, une décision. Vous pouvez revenir ou réinitialiser.</p></article>
+      </div>
+    </section>
+
+    <section class="tree-shell" id="tree">
+      <aside class="tree-sidebar">
+        <div class="sidebar-title">CATEGORIES PRINCIPALES</div>
+        <div id="category-list" class="category-list"></div>
+        <div class="source-box">
+          <div class="source-title">SOURCES VÉRIFIÉES</div>
+          <p>Guides construits à partir de ressources officielles de Microsoft, Apple, Google, Cisco et des fabricants majeurs.</p>
+          <div id="source-list" class="source-list"></div>
+        </div>
+      </aside>
+
+      <section class="tree-main">
+        <div class="tree-toolbar">
+          <div class="breadcrumbs" id="breadcrumbs"></div>
+          <div class="toolbar-actions">
+            <button id="back-btn" class="tool-btn" type="button">← Retour</button>
+            <button id="reset-btn" class="tool-btn" type="button">Réinitialiser</button>
+            <button id="close-btn" class="tool-btn ghost" type="button">Fermer tout</button>
+          </div>
+        </div>
+        <div class="stepper" id="stepper"></div>
+        <div id="view" class="tree-view"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="assist-footer">
+    <div><strong>Vous préférez un humain ?</strong><span>27sys peut prendre le relais si le diagnostic dépasse le premier niveau.</span></div>
+    <a href="https://wa.me/212640008930" target="_blank" rel="noopener">Contacter 27sys sur WhatsApp ↗</a>
+  </footer>
+
+  <script src="js/assistance.js"></script>
+</body>
+</html>
