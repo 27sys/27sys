@@ -1,0 +1,163 @@
+{
+  "version": "1.0",
+  "title": "27sys N1 Helpdesk Library",
+  "note": "Bibliothèque opérationnelle de dépannage N1 construite à partir de documentations officielles Microsoft, Apple et Google/Android. Elle est alignée sur des pratiques N1, mais ne constitue pas une certification officielle.",
+  "methodology": {
+    "rules": [
+      "Identifier appareil et symptôme avant d'agir.",
+      "Commencer par les vérifications simples, sûres et réversibles.",
+      "Une question ou une action à la fois.",
+      "Tester après chaque action.",
+      "Ne jamais demander de secret.",
+      "Escalader lorsqu'une manipulation physique, un risque de données ou un diagnostic avancé est nécessaire."
+    ],
+    "source": "https://support.microsoft.com/en-us/support/get-help/windows-troubleshooters"
+  },
+  "flows": [
+    {
+      "id":"pc_wifi_no_internet",
+      "title":"PC connecté au Wi-Fi mais sans Internet",
+      "match":["pc","ordinateur","wifi","internet","pas internet","plus internet","connecté"],
+      "source":"https://support.microsoft.com/en-US/Windows/Experience/Connectivity-Networking/fix-wi-fi-connection-issues-in-windows",
+      "steps":[
+        {"say":"D'accord. Est-ce qu'un autre appareil, comme ton téléphone, a Internet sur le même Wi-Fi ?","branch":{"yes":1,"no":3}},
+        {"say":"Le problème semble donc limité au PC. Est-ce que Windows affiche bien « Connecté » au Wi-Fi ?","branch":{"yes":2,"no":3}},
+        {"say":"On va vérifier la connexion du PC. Peux-tu couper le Wi-Fi du PC puis le réactiver et me dire si Internet revient ?","branch":{"yes":4,"no":4}},
+        {"say":"Comme plusieurs appareils n'ont pas Internet, le problème semble plutôt venir du réseau ou du routeur. Peux-tu redémarrer le routeur, attendre qu'il retrouve ses voyants habituels, puis tester ?","branch":{"yes":5,"no":5}},
+        {"say":"Si Internet revient après la reconnexion, le problème était probablement temporaire sur le PC. Est-ce que ça fonctionne maintenant ?","branch":{"yes":6,"no":6}},
+        {"say":"Si plusieurs appareils restent sans Internet après le redémarrage du routeur, contacte ton fournisseur Internet ou 27sys pour un diagnostic réseau.","end":"escalate"},
+        {"say":"Si le problème revient sur le PC malgré ces vérifications, 27sys peut poursuivre le diagnostic sur place.","end":"escalate"}
+      ]
+    },
+    {
+      "id":"wifi_cannot_connect",
+      "title":"Wi-Fi impossible à connecter",
+      "match":["wifi","se connecter","connexion wifi","mot de passe wifi","wifi ne marche pas","wifi marche pas"],
+      "source":"https://support.microsoft.com/en-US/Windows/Experience/Connectivity-Networking/fix-wi-fi-connection-issues-in-windows",
+      "steps":[
+        {"say":"Est-ce que le réseau Wi-Fi apparaît dans la liste des réseaux disponibles ?","branch":{"yes":1,"no":2}},
+        {"say":"Quand tu sélectionnes le réseau, Windows accepte-t-il le mot de passe ou affiche-t-il une erreur ?","branch":{"yes":3,"no":4}},
+        {"say":"Le réseau apparaît mais ne se connecte pas. Essaie de désactiver puis réactiver le Wi-Fi du PC. Est-ce que ça se connecte ensuite ?","branch":{"yes":5,"no":5}},
+        {"say":"Vérifie que le mot de passe est exactement le bon, puis essaie à nouveau. Si ça échoue encore, dis-moi le message affiché.","branch":{"yes":5,"no":5}},
+        {"say":"Si le réseau n'apparaît toujours pas, le problème peut venir du point d'accès, de la portée ou de l'adaptateur Wi-Fi. Essaie un autre appareil au même endroit. Est-ce qu'il voit le réseau ?","branch":{"yes":6,"no":6}},
+        {"say":"Si le problème persiste seulement sur le PC, 27sys peut vérifier l'adaptateur et ses pilotes.","end":"escalate"},
+        {"say":"Si plusieurs appareils ne voient pas le réseau, il faut vérifier le routeur ou point d'accès.","end":"escalate"}
+      ]
+    },
+    {
+      "id":"pc_slow",
+      "title":"PC lent",
+      "match":["pc lent","ordinateur lent","lent","rame","ralenti","lag","freeze","bloque"],
+      "source":"https://support.microsoft.com/en-US/Windows/Experience/Performance-Optimization/tips-to-improve-pc-performance-in-windows",
+      "steps":[
+        {"say":"Est-ce que le PC est lent depuis toujours ou le problème a commencé récemment ?","branch":{"yes":1,"no":2}},
+        {"say":"Ferme les applications et onglets inutiles puis redémarre le PC. Est-ce qu'il reste lent après le redémarrage ?","branch":{"yes":2,"no":4}},
+        {"say":"Combien d'espace libre reste-t-il sur le disque Windows ?","branch":{"yes":3,"no":3}},
+        {"say":"Si le disque est presque plein, libérer de l'espace peut aider. Si l'espace est suffisant, on peut vérifier les applications au démarrage. Veux-tu continuer ?","branch":{"yes":4,"no":4}},
+        {"say":"Le problème peut venir des applications de démarrage, du stockage, des mises à jour ou d'un matériel devenu limité. 27sys peut faire un diagnostic plus complet.","end":"escalate"}
+      ]
+    },
+    {
+      "id":"blue_screen",
+      "title":"Écran bleu Windows",
+      "match":["écran bleu","ecran bleu","blue screen","bsod","stop code","bugcheck"],
+      "source":"https://support.microsoft.com/en-US/windows/resolving-blue-screen-errors-in-windows-60b01860-58f2-be66-7516-5c45a66ae3c6",
+      "steps":[
+        {"say":"Est-ce que l'écran bleu affiche un code STOP ou un nom dans « What failed » ?","branch":{"yes":1,"no":2}},
+        {"say":"Note le code STOP exact. Cela permet d'orienter le diagnostic vers un pilote, du matériel ou Windows. Le PC redémarre-t-il ensuite normalement ?","branch":{"yes":3,"no":3}},
+        {"say":"Le problème arrive-t-il après l'installation récente d'un matériel, pilote ou logiciel ?","branch":{"yes":3,"no":3}},
+        {"say":"Un écran bleu récurrent peut nécessiter un diagnostic plus poussé. 27sys peut vérifier les pilotes, les journaux et le matériel en sécurité.","end":"escalate"}
+      ]
+    },
+    {
+      "id":"windows_startup",
+      "title":"Windows ne démarre pas correctement",
+      "match":["windows ne démarre pas","windows démarre pas","démarrage","boot","startup","boucle redémarrage","redémarre en boucle"],
+      "source":"https://support.microsoft.com/en-us/windows/windows-startup-settings",
+      "steps":[
+        {"say":"Est-ce que tu arrives jusqu'à l'écran de connexion Windows ou le PC redémarre avant ?","branch":{"yes":1,"no":2}},
+        {"say":"Le problème arrive-t-il après une mise à jour, un pilote ou une installation récente ?","branch":{"yes":3,"no":3}},
+        {"say":"Si Windows reste bloqué, le mode sans échec peut aider à isoler un pilote ou service. Est-ce que tu peux accéder aux options de récupération Windows ?","branch":{"yes":4,"no":4}},
+        {"say":"Si Windows reste en boucle ou ne permet pas d'accéder aux options de récupération, 27sys peut intervenir pour le diagnostic sans risquer tes données.","end":"escalate"}
+      ]
+    },
+    {
+      "id":"printer_not_printing",
+      "title":"Imprimante n'imprime pas",
+      "match":["imprimante","printer","n'imprime pas","imprime pas","imprimer","impression"],
+      "source":"https://support.microsoft.com/en-us/windows/hardware/printer/fix-printer-connection-and-printing-problems-in-windows",
+      "steps":[
+        {"say":"L'imprimante apparaît-elle comme disponible dans Windows, ou est-elle affichée hors connexion / en erreur ?","branch":{"yes":1,"no":2}},
+        {"say":"Vérifie qu'il n'y a pas de papier coincé, que le bac contient du papier et que le capot est bien fermé. Est-ce que l'imprimante est prête ?","branch":{"yes":3,"no":4}},
+        {"say":"Essaie d'annuler les documents bloqués dans la file d'impression puis relance une impression test. Est-ce que ça imprime ?","branch":{"yes":5,"no":4}},
+        {"say":"Si l'imprimante n'est toujours pas reconnue ou reste en erreur, il peut falloir vérifier la connexion, le pilote ou le service Print Spooler. 27sys peut le faire avec toi.","end":"escalate"},
+        {"say":"Si elle imprime à nouveau, le problème était probablement temporaire ou lié à la file d'impression.","end":"resolved"},
+        {"say":"Parfait. Si le problème revient, 27sys peut vérifier l'installation et le pilote.","end":"resolved"}
+      ]
+    },
+    {
+      "id":"iphone_cellular",
+      "title":"iPhone sans Internet en 4G/5G",
+      "match":["iphone","iPhone","4g","5g","données mobiles","data mobile","pas internet"],
+      "source":"https://support.apple.com/en-lamr/guide/iphone/iphd1cf4268/ios",
+      "steps":[
+        {"say":"Est-ce que les données cellulaires sont activées dans Réglages > Données cellulaires ?","branch":{"yes":1,"no":2}},
+        {"say":"Active les données cellulaires puis coupe le Wi-Fi pour tester uniquement le réseau mobile. Est-ce que Internet fonctionne ?","branch":{"yes":3,"no":3}},
+        {"say":"Est-ce que tu vois bien 4G, 5G ou LTE à côté du signal ?","branch":{"yes":4,"no":5}},
+        {"say":"Active le mode Avion pendant environ 15 secondes puis désactive-le et reteste. Est-ce que la connexion revient ?","branch":{"yes":6,"no":5}},
+        {"say":"Si tu n'as pas d'indicateur de données ou de service, le problème peut venir de la couverture, de la SIM ou de l'opérateur. 27sys peut t'aider à isoler la cause, mais l'opérateur devra parfois intervenir.","end":"escalate"},
+        {"say":"Si le mode Avion ne rétablit pas la connexion, il faut vérifier la ligne, la couverture ou les réglages opérateur. 27sys peut poursuivre le diagnostic.","end":"escalate"},
+        {"say":"Parfait, la connexion mobile est revenue. Si le problème revient souvent, vérifie avec ton opérateur.","end":"resolved"}
+      ]
+    },
+    {
+      "id":"iphone_wifi",
+      "title":"iPhone sans Wi-Fi",
+      "match":["iphone","wifi","wi-fi","ne se connecte pas","pas de wifi"],
+      "source":"https://support.apple.com/en-la/111786",
+      "steps":[
+        {"say":"Dans Réglages > Wi-Fi, est-ce que le réseau apparaît et peux-tu le sélectionner ?","branch":{"yes":1,"no":2}},
+        {"say":"Le réseau n'apparaît pas du tout, ou le Wi-Fi lui-même est grisé ?","branch":{"yes":2,"no":2}},
+        {"say":"Redémarre l'iPhone puis réessaie. Est-ce que le réseau apparaît et se connecte ?","branch":{"yes":3,"no":4}},
+        {"say":"Est-ce que d'autres appareils arrivent à se connecter au même Wi-Fi ?","branch":{"yes":5,"no":6}},
+        {"say":"Si seul l'iPhone a le problème, 27sys peut poursuivre le diagnostic des réglages réseau et du téléphone.","end":"escalate"},
+        {"say":"Si plusieurs appareils ne peuvent pas se connecter, le problème est probablement côté routeur ou réseau. Vérifie le routeur puis contacte ton fournisseur ou 27sys.","end":"escalate"},
+        {"say":"Si le téléphone se connecte après le redémarrage, le problème était probablement temporaire.","end":"resolved"}
+      ]
+    },
+    {
+      "id":"android_internet",
+      "title":"Android sans Internet",
+      "match":["android","samsung","xiaomi","redmi","oppo","realme","mobile data","données mobiles","wifi","internet"],
+      "source":"https://support.google.com/android/answer/2651367?hl=fr",
+      "steps":[
+        {"say":"Le problème concerne-t-il le Wi-Fi, les données mobiles, ou les deux ?","branch":{"wifi":1,"mobile":2,"both":3,"yes":1,"no":3}},
+        {"say":"Pour les données mobiles : sont-elles activées et vois-tu 4G/5G/H près du signal ?","branch":{"yes":4,"no":5}},
+        {"say":"Pour le Wi-Fi : le téléphone est-il connecté au réseau mais sans Internet ?","branch":{"yes":6,"no":5}},
+        {"say":"Active le mode Avion 10 secondes puis désactive-le et reteste. Est-ce que la connexion revient ?","branch":{"yes":7,"no":5}},
+        {"say":"Si le signal de données n'apparaît pas, vérifie la couverture et la ligne auprès de l'opérateur. 27sys peut aider à isoler si le souci vient du téléphone.","end":"escalate"},
+        {"say":"Redémarre le téléphone et teste à nouveau. Si le problème continue, 27sys peut poursuivre le diagnostic.","end":"escalate"},
+        {"say":"Redémarre le Wi-Fi du téléphone puis teste un autre appareil sur le même réseau. Est-ce que les autres appareils ont Internet ?","branch":{"yes":8,"no":9}},
+        {"say":"Si ça revient après le mode Avion, la connexion mobile fonctionne à nouveau. Si le problème revient souvent, vérifie avec ton opérateur.","end":"resolved"},
+        {"say":"Si les autres appareils ont Internet, le problème semble local au téléphone. 27sys peut poursuivre le diagnostic.","end":"escalate"},
+        {"say":"Si plusieurs appareils n'ont pas Internet, vérifie le routeur ou la connexion Internet.","end":"escalate"}
+      ]
+    },
+    {
+      "id":"tv_wifi",
+      "title":"TV sans Internet / Wi-Fi",
+      "match":["tv","télé","smart tv","television","netflix","wifi","internet"],
+      "source":"https://support.google.com/android/answer/2651367?hl=fr",
+      "steps":[
+        {"say":"La TV voit-elle ton réseau Wi-Fi dans la liste ?","branch":{"yes":1,"no":2}},
+        {"say":"Quand tu la connectes au Wi-Fi, est-elle affichée comme connectée mais sans Internet ?","branch":{"yes":3,"no":4}},
+        {"say":"Est-ce que ton téléphone a Internet sur ce même Wi-Fi ?","branch":{"yes":5,"no":6}},
+        {"say":"Vérifie le mot de passe Wi-Fi et redémarre la TV. Est-ce qu'elle se connecte ensuite ?","branch":{"yes":7,"no":5}},
+        {"say":"Le problème semble limité à la TV. 27sys peut vérifier ses paramètres réseau et sa configuration.","end":"escalate"},
+        {"say":"Si le téléphone a Internet mais pas la TV, le diagnostic doit se concentrer sur la TV. 27sys peut poursuivre avec toi.","end":"escalate"},
+        {"say":"Si le téléphone n'a pas non plus Internet, vérifie le routeur ou la connexion Internet en premier.","end":"escalate"},
+        {"say":"Parfait, la TV est reconnectée.","end":"resolved"}
+      ]
+    }
+  ]
+}
