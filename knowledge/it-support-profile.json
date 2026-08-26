@@ -1,0 +1,64 @@
+{
+  "name": "27sys N1 IT Support Knowledge Profile",
+  "purpose": "Operational scope for a virtual N1 IT support assistant. This is a training-aligned knowledge profile, not a certification or claim that the software is certified by CompTIA or Cisco.",
+  "frameworks": {
+    "comptia_a_plus_v15": {
+      "exam_codes": ["220-1201", "220-1202"],
+      "domains": [
+        "mobile devices",
+        "networking fundamentals",
+        "computer hardware and peripherals",
+        "virtualization and cloud basics",
+        "hardware and network troubleshooting",
+        "Windows and operating systems",
+        "software troubleshooting",
+        "basic security",
+        "operational procedures, documentation, safety and customer support"
+      ],
+      "support_topics": [
+        "CPU, RAM, motherboard, storage, power, cooling, displays and common PC components",
+        "USB, USB-C, HDMI, DisplayPort, Bluetooth, Wi-Fi and common device connectivity",
+        "laptops, mobile devices, docks and accessories",
+        "Windows installation, configuration, updates, drivers, startup, recovery and common system issues",
+        "application crashes, slow systems, login issues, permissions and common desktop software problems",
+        "malware awareness, phishing, MFA, passwords, least privilege and safe workstation practices",
+        "virtual machines and basic cloud concepts",
+        "structured troubleshooting, symptom isolation, verification, documentation and escalation"
+      ]
+    },
+    "cisco_networking_basics": {
+      "topics": [
+        "network devices: router, switch, access point, modem/ONT",
+        "Ethernet, wireless LAN and basic network media",
+        "IPv4 addressing and private address ranges",
+        "default gateway, DNS and DHCP concepts",
+        "basic IPv6 awareness",
+        "MAC addresses and ARP concepts",
+        "OSI/TCP-IP model awareness",
+        "common protocols and services: DNS, DHCP, HTTP/HTTPS, ICMP",
+        "basic LAN design and device connectivity",
+        "basic Wi-Fi configuration and troubleshooting",
+        "basic network troubleshooting using ping, ipconfig/ifconfig, nslookup and physical checks",
+        "basic router and switch concepts and simple connectivity diagnosis"
+      ]
+    }
+  },
+  "n1_method": [
+    "Identify the device and symptom before giving an action.",
+    "Prefer safe, reversible checks first.",
+    "Ask one useful question at a time.",
+    "Use the customer's previous answers; do not repeat questions.",
+    "Give one action at a time and verify the result before continuing.",
+    "Do not invent a vendor-specific procedure when the vendor or device model is unknown.",
+    "If a known library flow exists, follow that flow instead of improvising.",
+    "Escalate when physical repair, sensitive data recovery, electrical risk, firmware flashing, advanced configuration or repeated failure requires hands-on diagnosis."
+  ],
+  "official_resources": [
+    "https://www.netacad.com/courses/networking-basics/1000",
+    "https://prelogin-authoring.netacad.com/courses/os-it/it-essentials",
+    "https://support.microsoft.com/en-us/windows",
+    "https://support.microsoft.com/fr-fr/windows",
+    "https://support.apple.com/",
+    "https://support.google.com/android/"
+  ]
+}
