@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "currency": "MAD",
+    "country": "MA",
+    "updated_at": "2026-09-02",
+    "update_mode": "automatique quotidien par GitHub Actions",
+    "note": "Prix indicatifs : meilleur prix repéré dans les sources suivies. Vérification finale disponibilité, garantie, livraison et modèle avant commande."
+  },
+  "products": [
+    {"id":"router-c6","category":"reseau","name":"TP-Link Archer C6 — Wi-Fi 5 / Gigabit","unit":"unité","price":767,"source":"Primini","url":"https://primini.ma/prix/19256/tp-link-archer-c6-routeur-sans-fil-gigabit-ethernet-bi-bande-2-4-g-hz-5-g-hz-5g-noir-archer-c6-v3-2","auto_update":true},
+    {"id":"router-ax23","category":"reseau","name":"TP-Link Archer AX23 — Wi-Fi 6 / Gigabit","unit":"unité","price":690,"source":"Primini","url":"https://primini.ma/prix/135462/tp-link-archer-ax23-routeur-sans-fil-gigabit-ethernet-bi-bande-2-4-g-hz-5-g-hz-5g-noir","auto_update":true},
+    {"id":"router-ax73","category":"reseau","name":"TP-Link Archer AX73 — Wi-Fi 6 / AX5400","unit":"unité","price":1499,"source":"Primini","url":"https://primini.ma/prix/156742/tp-link-archer-ax73-routeur-sans-fil-gigabit-ethernet-bi-bande-2-4-g-hz-5-g-hz-noir-archer-ax73","auto_update":true},
+    {"id":"switch-ls1008g","category":"reseau","name":"TP-Link LS1008G — Switch Gigabit 8 ports","unit":"unité","price":290,"source":"GIGABIT Maroc","url":"https://www.gigabit.ma/tp-link-8-port-gigabit-switch.html","auto_update":false},
+    {"id":"switch-sg108","category":"reseau","name":"TP-Link TL-SG108 — Switch Gigabit 8 ports","unit":"unité","price":370,"source":"Primini","url":"https://primini.ma/prix/142252/tp-link-tl-sg108-commutateur-reseau-non-gere-l2-gigabit-ethernet-10-100-1000-noir-tl-sg108","auto_update":true},
+    {"id":"ap-eap650","category":"wifi","name":"TP-Link EAP650 — Point d'accès Wi-Fi 6","unit":"unité","price":769,"source":"Primini","url":"https://primini.ma/prix/151575/tp-link-eap650-point-d-acces-reseaux-locaux-sans-fil-2976-mbit-s-blanc-connexion-ethernet-supportant-l-alimentation-via-ce-port-po-e-eap650","auto_update":true},
+    {"id":"ap-eap225","category":"wifi","name":"TP-Link EAP225 — Point d'accès Wi-Fi 5","unit":"unité","price":849,"source":"Primini","url":"https://primini.ma/prix/44868/tp-link-eap225-routeur-sans-fil-gigabit-ethernet-bi-bande-2-4-g-hz-5-g-hz-blanc-eap225","auto_update":true},
+    {"id":"ssd-nv2-500","category":"stockage","name":"Kingston NV2 500 Go — SSD NVMe","unit":"unité","price":509,"source":"Primini","url":"https://primini.ma/prix/156250/kingston-technology-nv2-m-2-500-go-pci-express-4-0-nv-me-snv2s-500g","auto_update":true},
+    {"id":"ssd-a400-480","category":"stockage","name":"Kingston A400 480 Go — SSD SATA","unit":"unité","price":503,"source":"Primini","url":"https://primini.ma/prix/73324/kingston-technology-a400-2-5-480-go-serie-ata-iii-tlc-sa400s37-480g","auto_update":true},
+    {"id":"printer-canon-lbp6030w","category":"impression","name":"Canon LBP6030w — Laser monochrome Wi-Fi","unit":"unité","price":1770,"source":"Primini","url":"https://primini.ma/prix/166858/imprimantes-laser-monochrome","auto_update":true},
+    {"id":"printer-hp-smart-tank-585","category":"impression","name":"HP Smart Tank 585 — Multifonction à réservoir","unit":"unité","price":1680,"source":"Primini","url":"https://primini.ma/liste-produit/imprimantes","auto_update":true},
+    {"id":"ups-apc-bx1600","category":"alimentation","name":"APC BX1600MI — Onduleur 1600 VA","unit":"unité","price":2299,"source":"Electromall","url":"https://electromall.ma/informatique-maroc/","auto_update":false},
+    {"id":"laptop-hp-15","category":"ordinateur","name":"HP 15 — Ryzen 5 / 8 Go / 512 Go SSD","unit":"unité","price":5649,"source":"Jumia Maroc","url":"https://www.jumia.ma/ordinateurs-pc/","auto_update":false},
+    {"id":"laptop-refurb-thinkpad","category":"ordinateur","name":"Lenovo ThinkPad L13 — i5 / 8 Go / 256 Go SSD reconditionné","unit":"unité","price":2374,"source":"Jumia Maroc","url":"https://www.jumia.ma/ordinateurs-pc/","auto_update":false}
+  ]
+}
