@@ -42,14 +42,28 @@ document.addEventListener("DOMContentLoaded", function () {
   const TREE='assistance.html';
   const hideLegacy=()=>document.querySelectorAll('#ai27-launcher,#ai27').forEach(el=>el.remove());
   const routeButtons=()=>document.querySelectorAll('a,button').forEach(el=>{
-    if(/assistance\s+virtuelle\s+gratuite/i.test((el.textContent||'').trim())){
-      el.setAttribute('href',TREE);
-      el.removeAttribute('target');
-      if(!el.dataset.treeBound){el.dataset.treeBound='1';el.addEventListener('click',()=>{window.location.href=TREE})}
-    }
+    if(/assistance\s+virtuelle\s+gratuite/i.test((el.textContent||'').trim())){el.setAttribute('href',TREE);el.removeAttribute('target');if(!el.dataset.treeBound){el.dataset.treeBound='1';el.addEventListener('click',()=>{window.location.href=TREE})}}
   });
   const init=()=>{hideLegacy();routeButtons();const obs=new MutationObserver(()=>{hideLegacy();routeButtons()});obs.observe(document.body,{childList:true,subtree:true});};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+
+/* Homepage: quote simulator promotion */
+(function(){
+  const PAGE='devis.html';
+  const mount=()=>{
+    document.querySelectorAll('a,button').forEach(el=>{
+      if(/simulateur de devis/i.test((el.textContent||'').trim())){el.setAttribute('href',PAGE);el.removeAttribute('target');}
+    });
+    const nav=document.querySelector('.main-nav ul');
+    if(nav && !document.querySelector('.quote-nav-link')){const li=document.createElement('li');li.innerHTML='<a class="quote-nav-link" href="devis.html">Simulateur de devis</a>';nav.appendChild(li);}
+    const ask=document.querySelector('#commencer .ask-carousel, #commencer .ask-grid');
+    if(ask && !document.querySelector('.quote-promo')){
+      const block=document.createElement('a');block.className='quote-promo';block.href=PAGE;block.innerHTML='<span class="quote-promo-kicker">05 / OUTIL 27SYS</span><strong>Estimez votre équipement avant de demander l\'installation.</strong><span>Choisissez votre besoin, construisez une configuration et consultez un budget indicatif basé sur les prix suivis au Maroc.</span><b>Ouvrir le simulateur →</b>';
+      ask.parentNode.insertBefore(block,ask.nextSibling);
+    }
+  };
+  const style=document.createElement('style');style.textContent=`.quote-nav-link{color:#FF6B35!important}.quote-promo{display:grid;grid-template-columns:180px minmax(0,1.2fr) minmax(0,1fr) auto;align-items:center;gap:20px;margin-top:18px;padding:22px 24px;border:1px solid #2a3440;background:#121920;color:#fff;text-decoration:none;transition:.25s var(--ease)}.quote-promo:hover{transform:translateY(-2px);border-color:#FF6B35}.quote-promo-kicker{font:500 10px var(--mono);letter-spacing:.12em;color:#FF8B5C}.quote-promo strong{font:600 20px var(--display);line-height:1.1}.quote-promo span:not(.quote-promo-kicker){color:#aeb7bf;font-size:12px;line-height:1.5}.quote-promo b{font:600 12px var(--mono);color:#8FD0FF;white-space:nowrap}@media(max-width:900px){.quote-promo{grid-template-columns:1fr;gap:10px;padding:18px}.quote-promo b{margin-top:5px}}`;document.head.appendChild(style);if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
 })();
 
 /* Do not load the legacy chatbot on the homepage. */
