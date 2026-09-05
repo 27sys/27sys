@@ -2,7 +2,7 @@
   "meta": {
     "currency": "MAD",
     "country": "MA",
-    "updated_at": "2026-09-04",
+    "updated_at": "2026-09-05",
     "update_mode": "automatique quotidien par GitHub Actions",
     "note": "Prix indicatifs : le moteur privilégie le prix le plus bas parmi les références qui correspondent aux contraintes déclarées. Vérification finale de disponibilité, garantie, livraison et compatibilité avant commande."
   },
@@ -21,7 +21,7 @@
       "source": "Primini",
       "url": "https://primini.ma/prix/19256/tp-link-archer-c6-routeur-sans-fil-gigabit-ethernet-bi-bande-2-4-g-hz-5-g-hz-5g-noir-archer-c6-v3-2",
       "auto_update": true,
-      "last_checked": "2026-09-04",
+      "last_checked": "2026-09-05",
       "price_status": "live"
     },
     {
@@ -39,7 +39,7 @@
       "source": "Primini",
       "url": "https://primini.ma/prix/135462/tp-link-archer-ax23-routeur-sans-fil-gigabit-ethernet-bi-bande-2-4-g-hz-5-g-hz-5g-noir",
       "auto_update": true,
-      "last_checked": "2026-09-04",
+      "last_checked": "2026-09-05",
       "price_status": "live"
     },
     {
@@ -57,7 +57,7 @@
       "source": "Primini",
       "url": "https://primini.ma/prix/156742/tp-link-archer-ax73-routeur-sans-fil-gigabit-ethernet-bi-bande-2-4-g-hz-5-g-hz-noir-archer-ax73",
       "auto_update": true,
-      "last_checked": "2026-09-04",
+      "last_checked": "2026-09-05",
       "price_status": "fallback"
     },
     {
@@ -84,13 +84,14 @@
       "ports": 8,
       "name": "TP-Link TL-SG108 — Switch Gigabit 8 ports",
       "unit": "unité",
-      "price": 370,
+      "price": 170,
       "level": "Alternative",
       "source": "Primini",
       "url": "https://primini.ma/prix/142252/tp-link-tl-sg108-commutateur-reseau-non-gere-l2-gigabit-ethernet-10-100-1000-noir-tl-sg108",
       "auto_update": true,
-      "last_checked": "2026-09-04",
-      "price_status": "live"
+      "last_checked": "2026-09-05",
+      "price_status": "live",
+      "previous_price": 370
     },
     {
       "id": "ap-eap650",
@@ -105,7 +106,7 @@
       "source": "Primini",
       "url": "https://primini.ma/prix/151575/tp-link-eap650-point-d-acces-reseaux-locaux-sans-fil-2976-mbit-s-blanc-connexion-ethernet-supportant-l-alimentation-via-ce-port-po-e-eap650",
       "auto_update": true,
-      "last_checked": "2026-09-04",
+      "last_checked": "2026-09-05",
       "price_status": "live"
     },
     {
@@ -122,7 +123,7 @@
       "source": "Primini",
       "url": "https://primini.ma/prix/156250/kingston-technology-nv2-m-2-500-go-pci-express-4-0-nv-me-snv2s-500g",
       "auto_update": true,
-      "last_checked": "2026-09-04",
+      "last_checked": "2026-09-05",
       "price_status": "live"
     },
     {
@@ -140,7 +141,7 @@
       "source": "Primini",
       "url": "https://primini.ma/prix/73324/kingston-technology-a400-2-5-480-go-serie-ata-iii-tlc-sa400s37-480g",
       "auto_update": true,
-      "last_checked": "2026-09-04",
+      "last_checked": "2026-09-05",
       "price_status": "live"
     },
     {
@@ -157,7 +158,7 @@
       "source": "Primini",
       "url": "https://primini.ma/prix/166858/imprimantes-laser-monochrome",
       "auto_update": true,
-      "last_checked": "2026-09-04",
+      "last_checked": "2026-09-05",
       "price_status": "fallback"
     },
     {
@@ -174,7 +175,7 @@
       "source": "Primini",
       "url": "https://primini.ma/liste-produit/imprimantes",
       "auto_update": true,
-      "last_checked": "2026-09-04",
+      "last_checked": "2026-09-05",
       "price_status": "fallback"
     },
     {
@@ -219,7 +220,7 @@
       "source": "Primini",
       "url": "https://primini.ma/prix/151426/amd-ryzen-5-5600-processeur-3-5-g-hz-32-mo-l3",
       "auto_update": true,
-      "last_checked": "2026-09-04",
+      "last_checked": "2026-09-05",
       "price_status": "fallback"
     },
     {
@@ -238,7 +239,7 @@
       "url": "https://primini.ma/prix/158033/msi-ventus-geforce-rtx-4060-2x-black-8g-oc-carte-graphique-nvidia-8-go-gddr6",
       "auto_update": true,
       "min_budget": 4000,
-      "last_checked": "2026-09-04",
+      "last_checked": "2026-09-05",
       "price_status": "fallback"
     },
     {
@@ -257,7 +258,7 @@
       "url": "https://primini.ma/prix/165834/gigabyte-gaming-radeon-rx-7600-oc-8g-amd-8-go-gddr6",
       "auto_update": true,
       "min_budget": 4500,
-      "last_checked": "2026-09-04",
+      "last_checked": "2026-09-05",
       "price_status": "fallback"
     },
     {
@@ -304,7 +305,7 @@
       "source": "Primini",
       "url": "https://primini.ma/prix/127632/msi-mag-a650bn-unite-d-alimentation-d-energie-650-w-20-4-pin-atx-atx-noir",
       "auto_update": true,
-      "last_checked": "2026-09-04",
+      "last_checked": "2026-09-05",
       "price_status": "live"
     }
   ]
